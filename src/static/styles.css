@@ -10,26 +10,27 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* Grille Puissance 4 */
 .grid {
   display: grid;
   grid-template-columns: repeat(7, 60px);
   grid-template-rows: repeat(6, 60px);
   gap: 5px;
-  justify-content: center; /* centre la grille */
+  justify-content: center;
   margin: 0 auto;
   background-color: #0066cc;
   padding: 10px;
   border-radius: 10px;
-
-  max-width: calc(7 * 60px + 6 * 5px + 20px); /* largeur max = colonnes + gaps + padding */
+  max-width: calc(7 * 60px + 6 * 5px + 20px); /* colonnes + gaps + padding */
 }
-
 
 .cell {
   width: 60px;
   height: 60px;
-  border-radius: 50%; /* trous ronds */
+  border-radius: 50%;
   background-color: white;
   box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+  cursor: pointer;
 }
+
+.red { background-color: red; }
+.yellow { background-color: yellow; }
