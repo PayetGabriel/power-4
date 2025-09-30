@@ -18,10 +18,13 @@ h1 {
   gap: 5px;
   justify-content: center; /* centre la grille */
   margin: 0 auto;
-  background-color: #0066cc; /* bleu plateau */
+  background-color: #0066cc;
   padding: 10px;
   border-radius: 10px;
+
+  max-width: calc(7 * 60px + 6 * 5px + 20px); /* largeur max = colonnes + gaps + padding */
 }
+
 
 .cell {
   width: 60px;
