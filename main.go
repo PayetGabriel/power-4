@@ -37,6 +37,10 @@ func main() {
 	// On configure la route principale
 	http.HandleFunc("/", handler)
 
+	// Servir les fichiers statiques (CSS, JS, images)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("src/static"))))
+	// Ici on sert le dossier "src/templates" via l'URL /static/
+
 	// On lance le serveur
 	log.Fatal(http.Serve(listener, nil))
 }
