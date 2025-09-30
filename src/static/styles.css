@@ -1,0 +1,35 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  background-color: #f0f0f0;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+/* Grille Puissance 4 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 60px);
+  grid-template-rows: repeat(6, 60px);
+  gap: 5px;
+  justify-content: center; /* centre la grille */
+  margin: 0 auto;
+  background-color: #0066cc;
+  padding: 10px;
+  border-radius: 10px;
+
+  max-width: calc(7 * 60px + 6 * 5px + 20px); /* largeur max = colonnes + gaps + padding */
+}
+
+
+.cell {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; /* trous ronds */
+  background-color: white;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
