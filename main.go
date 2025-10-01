@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-
 	"power-4/src/game"
 )
 
@@ -38,5 +37,4 @@ func main() {
 
 	log.Fatal(http.Serve(listener, nil))
 
-	
 }
