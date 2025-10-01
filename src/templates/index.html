@@ -1,25 +1,43 @@
+<!--
+  POWER 4 (CONNECT FOUR) GAME - HTML STRUCTURE
+  
+  This is the main HTML file for a Connect Four game.
+  It follows the KISS principle (Keep It Simple, Stupid) with minimal markup.
+  
+  Structure:
+  - Title and current player indicator
+  - Empty grid container (populated by JavaScript)
+  - Links to CSS and JavaScript files
+-->
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr"> <!-- French language for "Puissance 4" (Connect Four in French) -->
 <head>
-  <meta charset="UTF-8">
-  <title>Puissance 4</title>
+  <!-- Basic meta information -->
+  <meta charset="UTF-8"> <!-- Character encoding for proper text display -->
+  <title>Puissance 4</title> <!-- Browser tab title -->
+  
+  <!-- Link to external CSS file for styling -->
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+  <!-- Main game title -->
   <h1>Puissance 4</h1>
+  
+  <!-- Current player indicator -->
+  <!-- The span element will be updated by JavaScript to show whose turn it is -->
+  <p id="current-player">
+    Tour: <!-- "Tour" means "Turn" in French -->
+    <span class="red">Rouge</span> <!-- "Rouge" means "Red" in French -->
+  </p>
+  
+  <!-- Game grid container -->
+  <!-- This div starts empty and is populated with 42 cells by JavaScript -->
+  <!-- Using CSS Grid layout to create the 7x6 Connect Four board -->
+  <div id="grid"></div>
 
-  <div class="grid" id="grid">
-    <!-- 6 lignes × 7 colonnes -->
-    <!-- 42 div.cell -->
-    <!-- Ligne 1 -->
-    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-  </div>
-
+  <!-- Link to external JavaScript file for game logic -->
+  <!-- Placed at the end so the DOM is fully loaded before the script runs -->
   <script src="/static/script.js"></script>
 </body>
 </html>
