@@ -1,101 +1,208 @@
 /*
- * POWER 4 (CONNECT FOUR) GAME - JAVASCRIPT LOGIC
+ * POWER 4 (CONNECT FOUR) GAME - JAVASCRIPT FRONTEND
  * 
- * This file contains all the game logic for a Connect Four game.
- * The game is played on a 7x6 grid where players drop tokens from the top.
- * Players alternate between red and yellow tokens.
- * The goal is to connect 4 tokens in a row (horizontally, vertically, or diagonally).
+ * Ce fichier gère l'interface utilisateur et communique avec le backend Go
+ * pour la logique du jeu et la détection de victoire.
  */
 
-// ===== GAME CONFIGURATION =====
-const COLS = 7;  // Number of columns in the game grid (standard Connect Four)
-const ROWS = 6;  // Number of rows in the game grid (standard Connect Four)
+// ===== CONFIGURATION DU JEU =====
+const COLS = 7;  // Nombre de colonnes dans la grille
+const ROWS = 6;  // Nombre de lignes dans la grille
 
-// ===== GAME STATE =====
-let currentPlayer = "red";  // Track whose turn it is ("red" or "yellow")
+// ===== ÉLÉMENTS DOM =====
+const grid = document.getElementById("grid");
+const playerDisplay = document.querySelector("#current-player span");
 
-// ===== DOM ELEMENTS =====
-// Get references to HTML elements we'll need to manipulate
-const grid = document.getElementById("grid");                    // The game board container
-const playerDisplay = document.querySelector("#current-player span");  // Text showing current player
+// ===== ÉTAT DU JEU =====
+let gameData = null;  // État du jeu reçu du backend
+let isWaiting = false; // Empêcher les clics multiples pendant les requêtes
 
 /**
- * CREATE THE GAME GRID
+ * INITIALISER LE JEU
  * 
- * This function dynamically creates all 42 cells (7 columns × 6 rows)
- * and adds click event listeners to each cell.
+ * Cette fonction démarre le jeu en créant la grille
+ * et en récupérant l'état initial du serveur.
+ */
+async function initGame() {
+  createGrid();
+  await fetchGameState();
+  updateDisplay();
+}
+
+/**
+ * CRÉER LA GRILLE DE JEU
  * 
- * How it works:
- * - Creates 42 div elements (one for each cell)
- * - Each cell gets a click listener that determines which column was clicked
- * - The modulo operator (%) converts the cell index to a column number
- *   Example: cell 8 → 8 % 7 = column 1
+ * Crée 42 cellules cliquables (7 colonnes × 6 lignes)
+ * avec les gestionnaires d'événements appropriés.
  */
 function createGrid() {
-  // Loop through all 42 cells (ROWS * COLS = 6 * 7 = 42)
+  grid.innerHTML = ''; // Vider la grille existante
+  
   for (let i = 0; i < ROWS * COLS; i++) {
-    const cell = document.createElement("div");  // Create a new div element
-    cell.className = "cell";                    // Add CSS class for styling
+    const cell = document.createElement("div");
+    cell.className = "cell";
     
-    // Add click listener - when clicked, call handleClick with the column number
-    // i % COLS converts the cell index to column number (0-6)
-    cell.addEventListener("click", () => handleClick(i % COLS));
+    // Calculer la colonne à partir de l'index
+    const col = i % COLS;
     
-    grid.appendChild(cell);  // Add the cell to the grid container
+    // Ajouter un gestionnaire de clic pour cette colonne
+    cell.addEventListener("click", () => handleColumnClick(col));
+    
+    grid.appendChild(cell);
   }
 }
 
 /**
- * HANDLE COLUMN CLICK
+ * GÉRER LE CLIC SUR UNE COLONNE
  * 
- * When a player clicks on any cell in a column, this function:
- * 1. Finds the lowest empty cell in that column
- * 2. Drops the current player's token there
- * 3. Switches to the next player
+ * Envoie le coup au serveur et met à jour l'affichage
+ * avec la réponse reçue.
  * 
- * @param {number} col - The column number (0-6) where the player clicked
+ * @param {number} col - Numéro de la colonne cliquée (0-6)
  */
-function handleClick(col) {
-  const cells = grid.children;  // Get all the cell elements
-  
-  // Start from the bottom row and work upward to find an empty cell
-  // This simulates gravity - tokens fall to the lowest available position
-  for (let row = ROWS - 1; row >= 0; row--) {
-    // Convert row/column coordinates to array index
-    // Formula: index = row * COLS + col
-    // Example: row 5, col 3 → 5 * 7 + 3 = 38
-    const index = row * COLS + col;
-    const cell = cells[index];
-    
-    // Check if this cell is empty (doesn't have red or yellow class)
-    if (!cell.classList.contains("red") && !cell.classList.contains("yellow")) {
-      // Drop the token here
-      cell.classList.add(currentPlayer);  // Add color class ("red" or "yellow")
-      switchPlayer();                     // Switch to the other player
-      break;                             // Stop looking - we found our spot
+async function handleColumnClick(col) {
+  // Empêcher les clics multiples
+  if (isWaiting || (gameData && gameData.gameOver)) {
+    return;
+  }
+
+  isWaiting = true;
+
+  try {
+    // Envoyer le coup au serveur
+    const response = await fetch('/api/make-move', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ column: col })
+    });
+
+    const moveResult = await response.json();
+
+    if (moveResult.success) {
+      // Mettre à jour l'état du jeu avec la réponse du serveur
+      gameData = moveResult.game;
+      updateDisplay();
+
+      // Afficher un message si le jeu est terminé
+      if (gameData.gameOver) {
+        setTimeout(() => {
+          showGameOverMessage(moveResult.message);
+        }, 300); // Petit délai pour voir le dernier coup
+      }
+    } else {
+      // Afficher l'erreur si le coup n'est pas valide
+      console.warn("Coup invalide:", moveResult.message);
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'envoi du coup:", error);
+  } finally {
+    isWaiting = false;
+  }
+}
+
+/**
+ * RÉCUPÉRER L'ÉTAT DU JEU DEPUIS LE SERVEUR
+ * 
+ * Synchronise l'état local avec le serveur.
+ */
+async function fetchGameState() {
+  try {
+    const response = await fetch('/api/game-state');
+    gameData = await response.json();
+  } catch (error) {
+    console.error("Erreur lors de la récupération de l'état du jeu:", error);
+  }
+}
+
+/**
+ * METTRE À JOUR L'AFFICHAGE
+ * 
+ * Met à jour la grille visuelle et l'indicateur de joueur
+ * basé sur l'état actuel du jeu.
+ */
+function updateDisplay() {
+  if (!gameData) return;
+
+  // Mettre à jour toutes les cellules de la grille
+  const cells = grid.children;
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      const cellIndex = row * COLS + col;
+      const cell = cells[cellIndex];
+      const cellValue = gameData.board[row][col];
+
+      // Supprimer les anciennes classes de couleur
+      cell.classList.remove("red", "yellow");
+
+      // Ajouter la nouvelle classe si la cellule n'est pas vide
+      if (cellValue !== "empty") {
+        cell.classList.add(cellValue);
+      }
     }
   }
+
+  // Mettre à jour l'indicateur de joueur actuel
+  if (!gameData.gameOver) {
+    const playerText = gameData.turn === "red" ? "Rouge" : "Jaune";
+    playerDisplay.textContent = playerText;
+    playerDisplay.className = gameData.turn;
+  }
 }
 
 /**
- * SWITCH TO THE NEXT PLAYER
+ * AFFICHER LE MESSAGE DE FIN DE JEU
  * 
- * This function:
- * 1. Changes the current player from red to yellow (or vice versa)
- * 2. Updates the display text to show whose turn it is
- * 3. Updates the CSS class for proper text coloring
+ * Montre qui a gagné ou si c'est un match nul,
+ * et propose de recommencer.
+ * 
+ * @param {string} message - Message à afficher
  */
-function switchPlayer() {
-  // Toggle between "red" and "yellow" using ternary operator
-  currentPlayer = currentPlayer === "red" ? "yellow" : "red";
+function showGameOverMessage(message) {
+  const playAgain = confirm(message + "\n\nVoulez-vous jouer une nouvelle partie ?");
   
-  // Update the display text ("Rouge" = Red in French, "Jaune" = Yellow in French)
-  playerDisplay.textContent = currentPlayer === "red" ? "Rouge" : "Jaune";
-  
-  // Update the CSS class so the text color matches the current player
-  playerDisplay.className = currentPlayer;
+  if (playAgain) {
+    resetGame();
+  }
 }
 
-// ===== GAME INITIALIZATION =====
-// Start the game by creating the grid when the script loads
-createGrid();
+/**
+ * RÉINITIALISER LE JEU
+ * 
+ * Demande au serveur de remettre le jeu à zéro
+ * et met à jour l'affichage.
+ */
+async function resetGame() {
+  try {
+    const response = await fetch('/api/reset-game', {
+      method: 'POST'
+    });
+
+    gameData = await response.json();
+    updateDisplay();
+  } catch (error) {
+    console.error("Erreur lors de la réinitialisation du jeu:", error);
+  }
+}
+
+// ===== INITIALISATION =====
+// Démarrer le jeu quand la page est chargée
+document.addEventListener("DOMContentLoaded", initGame);
+
+// ===== FONCTIONS UTILITAIRES POUR LE DÉBOGAGE =====
+// Ces fonctions peuvent être appelées depuis la console du navigateur
+
+/**
+ * Afficher l'état actuel du jeu dans la console
+ */
+function debugGameState() {
+  console.log("État du jeu:", gameData);
+}
+
+/**
+ * Réinitialiser manuellement le jeu (pour le débogage)
+ */
+function debugReset() {
+  resetGame();
+}
