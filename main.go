@@ -37,4 +37,6 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("src/static"))))
 
 	log.Fatal(http.Serve(listener, nil))
+
+	
 }

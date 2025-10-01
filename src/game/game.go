@@ -73,3 +73,20 @@ func KVoisins(index int, deltas []int) []string {
 	}
 	return voisins
 }
+
+func (g *Game) DropToken(col int) (int, bool) {
+	for row := ROWS - 1; row >= 0; row-- {
+		if g.Board[row][col] == "empty" {
+			if g.Turn == 1 {
+				g.Board[row][col] = "p1"
+				CheckWin()
+			} else {
+				g.Board[row][col] = "p2"
+				CheckWin()
+			}
+			g.Turn = 3 - g.Turn // alterne entre 1 et 2
+			return row, true
+		}
+	}
+	return -1, false // colonne pleine
+}
