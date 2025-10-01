@@ -61,11 +61,13 @@ func (g *Game) MakeMove(col int) bool {
 		if g.Board[row][col] == "empty" {
 			// Placer le jeton
 			g.Board[row][col] = g.Turn
-			
+
 			// Vérifier la victoire
-			if g.checkWin() {
+			if win, tokens := g.checkWin(); win {
 				g.Winner = g.Turn
 				g.GameOver = true
+				// Enregistrer les jetons gagnants pour le frontend
+				_ = tokens // Remplacez ceci par une logique pour transmettre les tokens au frontend
 			} else if g.isBoardFull() {
 				g.Winner = "draw"
 				g.GameOver = true
@@ -76,7 +78,7 @@ func (g *Game) MakeMove(col int) bool {
 			return true
 		}
 	}
-	
+
 	// Colonne pleine
 	return false
 }
@@ -90,37 +92,41 @@ func (g *Game) switchPlayer() {
 	}
 }
 
-// checkWin vérifie s'il y a un gagnant
-func (g *Game) checkWin() bool {
+// checkWin vérifie s'il y a un gagnant et retourne les coordonnées des jetons alignés
+func (g *Game) checkWin() (bool, [4][2]int) {
+	var winningTokens [4][2]int
+
 	// Vérifier toutes les positions possibles
 	for row := 0; row < ROWS; row++ {
 		for col := 0; col < COLS; col++ {
 			if g.Board[row][col] != "empty" {
 				// Vérifier les 4 directions : horizontal, vertical, diagonal /, diagonal \
-				if g.checkDirection(row, col, 0, 1) ||  // horizontal
-				   g.checkDirection(row, col, 1, 0) ||  // vertical
-				   g.checkDirection(row, col, 1, 1) ||  // diagonal \
-				   g.checkDirection(row, col, 1, -1) {  // diagonal /
-					return true
+				if g.checkDirectionWithTokens(row, col, 0, 1, &winningTokens) || // horizontal
+					g.checkDirectionWithTokens(row, col, 1, 0, &winningTokens) || // vertical
+					g.checkDirectionWithTokens(row, col, 1, 1, &winningTokens) || // diagonal \
+					g.checkDirectionWithTokens(row, col, 1, -1, &winningTokens) { // diagonal /
+					return true, winningTokens
 				}
 			}
 		}
 	}
-	return false
+	return false, winningTokens
 }
 
-// checkDirection vérifie s'il y a 4 jetons alignés dans une direction donnée
-func (g *Game) checkDirection(startRow, startCol, deltaRow, deltaCol int) bool {
+// checkDirectionWithTokens vérifie s'il y a 4 jetons alignés dans une direction donnée et enregistre les coordonnées
+func (g *Game) checkDirectionWithTokens(startRow, startCol, deltaRow, deltaCol int, tokens *[4][2]int) bool {
 	player := g.Board[startRow][startCol]
 	if player == "empty" {
 		return false
 	}
 
 	count := 1 // Compter le jeton de départ
+	(*tokens)[0] = [2]int{startRow, startCol}
 
 	// Vérifier dans une direction
 	row, col := startRow+deltaRow, startCol+deltaCol
 	for count < 4 && row >= 0 && row < ROWS && col >= 0 && col < COLS && g.Board[row][col] == player {
+		(*tokens)[count] = [2]int{row, col}
 		count++
 		row += deltaRow
 		col += deltaCol
@@ -129,6 +135,7 @@ func (g *Game) checkDirection(startRow, startCol, deltaRow, deltaCol int) bool {
 	// Vérifier dans la direction opposée
 	row, col = startRow-deltaRow, startCol-deltaCol
 	for count < 4 && row >= 0 && row < ROWS && col >= 0 && col < COLS && g.Board[row][col] == player {
+		(*tokens)[count] = [2]int{row, col}
 		count++
 		row -= deltaRow
 		col -= deltaCol

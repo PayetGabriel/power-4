@@ -87,6 +87,9 @@ async function handleColumnClick(col) {
 
       // Afficher un message si le jeu est terminé
       if (gameData.gameOver) {
+        if (moveResult.tokens) {
+          drawStars(moveResult.tokens);
+        }
         setTimeout(() => {
           showGameOverMessage(moveResult.message);
         }, 300); // Petit délai pour voir le dernier coup
@@ -186,6 +189,66 @@ async function resetGame() {
   }
 }
 
+/**
+ * DESSINER DES ÉTOILES BLEUES
+ * 
+ * Ajoute des étoiles bleues au centre des jetons alignés.
+ * 
+ * @param {Array} tokens - Coordonnées des jetons alignés (ex: [[0,1], [0,2], [0,3], [0,4]])
+ */
+function drawStars(tokens) {
+  console.log("drawStars called with tokens:", tokens); // Log the function call
+
+  const cells = grid.children;
+
+  tokens.forEach(([row, col]) => {
+    console.log(`Processing token at row ${row}, col ${col}`); // Log each token
+    const index = row * COLS + col;
+    const cell = cells[index];
+
+    if (!cell) {
+      console.warn(`No cell found at index ${index} for row ${row}, col ${col}`);
+      return;
+    }
+
+    // Vérifier si une étoile existe déjà
+    const existingStar = cell.querySelector('.star');
+    if (!existingStar) {
+      // Ajouter une étoile bleue avec des styles temporaires
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.backgroundColor = 'red'; // Temporary bright color for visibility
+      star.style.border = '2px solid yellow'; // Temporary border for debugging
+      cell.appendChild(star);
+      console.log("Étoile ajoutée à la cellule :", cell); // Log de confirmation
+
+      // Log computed styles
+      const computedStyles = window.getComputedStyle(star);
+      console.log("Computed styles for .star:", computedStyles);
+    } else {
+      console.log("Étoile déjà présente dans la cellule :", cell); // Log if star already exists
+    }
+  });
+}
+
+// Ajouter un style CSS pour les étoiles
+const style = document.createElement('style');
+style.textContent = `
+  .star {
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; /* S'assurer que l'étoile est au-dessus des jetons */
+    border: 2px solid red; /* Test visuel temporaire */
+  }
+`;
+document.head.appendChild(style);
+
 // ===== INITIALISATION =====
 // Démarrer le jeu quand la page est chargée
 document.addEventListener("DOMContentLoaded", initGame);
@@ -206,3 +269,14 @@ function debugGameState() {
 function debugReset() {
   resetGame();
 }
+
+// Test manuel pour vérifier l'affichage des étoiles
+function testStarDisplay() {
+  const testCell = grid.children[0]; // Première cellule
+  const testStar = document.createElement('div');
+  testStar.className = 'star';
+  testCell.appendChild(testStar);
+  console.log("Étoile ajoutée manuellement à la première cellule.");
+}
+
+testStarDisplay();

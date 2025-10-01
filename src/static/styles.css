@@ -85,6 +85,7 @@ h1 {
   background-color: white;        /* Empty cells are white */
   cursor: pointer;                /* Show hand cursor on hover (indicates clickable) */
   transition: transform 0.2s;     /* Smooth animation for hover effects */
+  position: relative;              /* Added to ensure .star aligns correctly */
 }
 
 /* ===== INTERACTIVE EFFECTS ===== */
@@ -106,6 +107,20 @@ h1 {
 /* Yellow player token styling */
 .yellow {
   background-color: #f1c40f;  /* Bright yellow color for player 2 */
+}
+
+/* ===== STAR STYLING ===== */
+.star {
+  width: 20px;                     /* Small size for the star */
+  height: 20px;                    /* Keep it square */
+  background-color: #3498db;       /* Bright blue color for visibility */
+  border-radius: 50%;              /* Make it circular */
+  position: absolute;              /* Position relative to the cell */
+  top: 50%;                        /* Center vertically */
+  left: 50%;                       /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for perfect centering */
+  z-index: 100;                   /* Ensure visibility above other elements */
+  box-shadow: 0 0 10px #2980b9;    /* Add a glowing effect */
 }
 
 /*
