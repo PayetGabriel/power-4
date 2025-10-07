@@ -11,21 +11,9 @@ import (
 	"power-4/src/game"
 )
 
-var tmpl2 = template.Must(template.ParseFiles("src/templates/hub.html"))
 var tmpl = template.Must(template.ParseFiles("src/templates/index.html"))
 
 var g = game.NewGame()
-
-func launchHub(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-	// Execute the hub template
-	err := tmpl2.Execute(w, nil)
-	if err != nil {
-		log.Printf("Error executing hub template: %v", err)
-		http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
-	}
-}
 
 // handler pour la page principale
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -101,8 +89,6 @@ func main() {
 	port := listener.Addr().(*net.TCPAddr).Port
 	fmt.Printf("Serveur démarré sur http://localhost:%d\n", port)
 
-	http.HandleFunc("/", launchHub)
-
 	// Route pour la page principale
 	http.HandleFunc("/", handler)
 
@@ -114,10 +100,5 @@ func main() {
 	// Route pour les fichiers statiques (CSS et JS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("src/static"))))
 
-	http.HandleFunc("/debug", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Game State: %+v\n", g)
-	})
-
-	log.Printf("🌐 Serveur en écoute sur le port %d", port)
 	log.Fatal(http.Serve(listener, nil))
 }
