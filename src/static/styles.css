@@ -14,6 +14,7 @@ body {
   background-color: #f0f0f0;       /* Light gray background */
   margin: 0;                       /* Remove default browser margins */
   padding: 20px;                   /* Add some spacing around the page */
+  min-height: 100vh
 }
 
 /* Main title styling */
@@ -58,15 +59,15 @@ h1 {
 /* The main game board using CSS Grid layout */
 #grid {
   display: grid;                                      /* Use CSS Grid for layout */
-  grid-template-columns: repeat(7, 60px);             /* 7 columns, each 60px wide */
-  grid-template-rows: repeat(6, 60px);                /* 6 rows, each 60px tall */
-  gap: 5px;                                           /* 5px space between cells */
+  grid-template-columns: repeat(7, 65px);             /* 7 columns, each 60px wide */
+  grid-template-rows: repeat(6, 65px);                /* 6 rows, each 60px tall */
+  gap: 10px;                                           /* 5px space between cells */
   justify-content: center;                            /* Center the grid horizontally */
   margin: 0 auto;                                     /* Center the grid container */
   background-color: #0066cc;                          /* Blue background (classic Connect Four color) */
-  padding: 10px;                                      /* Space inside the grid container */
+  padding: 15px;                                      /* Space inside the grid container */
   border-radius: 10px;                               /* Rounded corners for modern look */
-  max-width: calc(7 * 60px + 6 * 5px + 20px);       /* Calculate exact width needed */
+  max-width: calc(7 * 65px + 6 * 5px + 20px);       /* Calculate exact width needed */
   /*
    * Width calculation breakdown:
    * - 7 columns × 60px = 420px (cell widths)
@@ -108,10 +109,4 @@ h1 {
   background-color: #f1c40f;  /* Bright yellow color for player 2 */
 }
 
-/*
- * COLOR CHOICES EXPLAINED:
- * - #e74c3c: A vibrant red that's easy to distinguish
- * - #f1c40f: A bright yellow that contrasts well with red
- * - #0066cc: Classic Connect Four blue for the game board
- * - #f0f0f0: Light gray background that doesn't compete with game colors
- */
+
