@@ -114,6 +114,12 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// replayHandler réinitialise le jeu puis renvoie à la page d'accueil
+func replayHandler(w http.ResponseWriter, r *http.Request) {
+	g.Reset()
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
 func main() {
 	listener, err := net.Listen("tcp", ":0")
 	if err != nil {
@@ -133,6 +139,7 @@ func main() {
 
 	// Route résultat
 	http.HandleFunc("/result", resultHandler)
+	http.HandleFunc("/replay", replayHandler)
 
 	// Route pour les fichiers statiques (CSS et JS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("src/static"))))

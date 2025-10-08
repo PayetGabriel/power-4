@@ -1,48 +1,58 @@
 <!--
   POWER 4 (CONNECT FOUR) GAME - HTML STRUCTURE
-  
-  This is the main HTML file for a Connect Four game.
-  It follows the KISS principle (Keep It Simple, Stupid) with minimal markup.
-  
-  Structure:
-  - Title and current player indicator
-  - Empty grid container (populated by JavaScript)
-  - Links to CSS and JavaScript files
+  Main HTML for a Connect Four game.
+  Combines functional JS structure (reset, theme toggle) and detailed comments.
 -->
 
 <!DOCTYPE html>
-<html lang="fr"> <!-- French language for "Puissance 4" (Connect Four in French) -->
+<html lang="fr">
 <head>
-  <!-- Basic meta information -->
-  <meta charset="UTF-8"> <!-- Character encoding for proper text display -->
-  <title>Puissance 4</title> <!-- Browser tab title -->
+  <meta charset="UTF-8">
+  <title>Puissance 4</title>
   
   <!-- Link to external CSS file for styling -->
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <!-- Main game title -->
-  <h1>Puissance 4</h1>
-  
-  <!-- Current player indicator -->
-  <!-- The span element will be updated by JavaScript to show whose turn it is -->
-  <p id="current-player">
-    Tour: <!-- "Tour" means "Turn" in French -->
-    <span class="red">Rouge</span> <!-- "Rouge" means "Red" in French -->
-  </p>
-  
-  <!-- Game controls -->
-  <div class="game-controls">
+  <header>
+    <!-- Main game title -->
+    <h1>Puissance 4</h1>
+    
+    <!-- Current player indicator and controls -->
+    <!-- The .controls div is left empty for JS alignment, buttons are outside to keep JS functional -->
+    <div class="controls"></div>
+    
+    <!-- Display whose turn it is -->
+    <p id="current-player">
+      Tour: <span class="red">Rouge</span>
+    </p>
+    
+    <!-- Game buttons -->
     <button id="reset-btn" onclick="resetGame()">Nouvelle Partie</button>
-  </div>
-  
-  <!-- Game grid container -->
-  <!-- This div starts empty and is populated with 42 cells by JavaScript -->
-  <!-- Using CSS Grid layout to create the 7x6 Connect Four board -->
-  <div id="grid"></div>
+    <button id="them-toggle">🌞 / 🌙</button>
+  </header>
 
-  <!-- Link to external JavaScript file for game logic -->
-  <!-- Placed at the end so the DOM is fully loaded before the script runs -->
+  <main>
+    <!-- Game grid container: populated with 42 cells via JS -->
+    <div id="grid"></div>
+  </main>
+
+  <!-- Game logic -->
   <script src="/static/script.js"></script>
+
+  <!-- Theme toggle logic -->
+  <script>
+    const toggleBtn = document.getElementById('them-toggle');
+    const userPref = localStorage.getItem('theme');
+
+    if (userPref === 'dark') {
+      document.body.classList.add('dark');
+    }
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const mode = document.body.classList.contains('dark') ? 'dark' : 'light';
+      localStorage.setItem('theme', mode);
+    });
+  </script>
 </body>
 </html>
