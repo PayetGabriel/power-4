@@ -1,112 +1,128 @@
-/*
- * POWER 4 (CONNECT FOUR) GAME - CSS STYLES
- * 
- * This file contains all the visual styling for the Connect Four game.
- * It uses modern CSS techniques like CSS Grid and transforms.
- * The design follows the KISS principle with clean, simple styling.
- */
+:root {
+  /* Palette claire */
+  --bg: #E8F0F2;
+  --text: #333;
+  --board-bg: #A8D0E6;
+  --cell-bg: #F8F9FA;
+  --red: #E76F51;
+  --yellow: #F4D35E;
+  --border: #7D9BA6;
+}
 
-/* ===== GLOBAL STYLES ===== */
-/* Main page layout and typography */
+body.dark {
+  --bg: #1E1F26;
+  --text: #F1FAEE;
+  --board-bg: #2E3A59;
+  --cell-bg: #394867;
+  --red: #E63946;
+  --yellow: #FFD166;
+  --border: #4A5568;
+}
+
 body {
-  font-family: Arial, sans-serif;  /* Clean, readable font */
-  text-align: center;              /* Center all content horizontally */
-  background-color: #f0f0f0;       /* Light gray background */
-  margin: 0;                       /* Remove default browser margins */
-  padding: 20px;                   /* Add some spacing around the page */
-  min-height: 100vh
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 /* Main title styling */
 h1 {
-  color: #333;           /* Dark gray color for good contrast */
-  margin-bottom: 10px;   /* Small space below the title */
+  margin-bottom: 10px;
+  font-size: 2.2rem;
 }
 
-/* Current player indicator styling */
-#current-player {
-  font-size: 1.2em;      /* Slightly larger than normal text */
-  font-weight: bold;     /* Make it stand out */
-  margin-bottom: 10px;   /* Reduced space for game controls */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-/* Game controls styling */
-.game-controls {
-  margin-bottom: 20px;   /* Space before the game grid */
-}
-
-#reset-btn {
-  background-color: #3498db;  /* Nice blue color */
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+button {
+  background-color: var(--board-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 1rem;
   cursor: pointer;
-  font-size: 1em;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
-#reset-btn:hover {
-  background-color: #2980b9;  /* Darker blue on hover */
+button:hover {
+  background-color: var(--cell-bg);
+  transform: scale(1.05);
 }
 
-#reset-btn:active {
-  background-color: #21618c;  /* Even darker when clicked */
-}
-
-/* ===== GAME GRID STYLES ===== */
-/* The main game board using CSS Grid layout */
+/* ====== GRILLE DE JEU ====== */
 #grid {
-  display: grid;                                      /* Use CSS Grid for layout */
-  grid-template-columns: repeat(7, 65px);             /* 7 columns, each 60px wide */
-  grid-template-rows: repeat(6, 65px);                /* 6 rows, each 60px tall */
-  gap: 10px;                                           /* 5px space between cells */
-  justify-content: center;                            /* Center the grid horizontally */
-  margin: 0 auto;                                     /* Center the grid container */
-  background-color: #0066cc;                          /* Blue background (classic Connect Four color) */
-  padding: 15px;                                      /* Space inside the grid container */
-  border-radius: 10px;                               /* Rounded corners for modern look */
-  max-width: calc(7 * 65px + 6 * 5px + 20px);       /* Calculate exact width needed */
-  /*
-   * Width calculation breakdown:
-   * - 7 columns × 60px = 420px (cell widths)
-   * - 6 gaps × 5px = 30px (spaces between cells)
-   * - 20px = padding (10px left + 10px right)
-   * - Total = 470px maximum width
-   */
+  background-color: var(--board-bg);
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(7, 70px);
+  grid-template-rows: repeat(6, 70px);
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s;
 }
 
-/* ===== INDIVIDUAL CELL STYLES ===== */
-/* Each clickable cell in the game grid */
 .cell {
-  width: 60px;                    /* Fixed width for consistent grid */
-  height: 60px;                   /* Fixed height (square cells) */
-  border-radius: 50%;             /* Make cells perfectly round (circles) */
-  background-color: white;        /* Empty cells are white */
-  cursor: pointer;                /* Show hand cursor on hover (indicates clickable) */
-  transition: transform 0.2s;     /* Smooth animation for hover effects */
+  width: 70px;
+  height: 70px;
+  background-color: var(--cell-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-/* ===== INTERACTIVE EFFECTS ===== */
-/* Hover effect for empty cells only */
-.cell:hover:not(.red):not(.yellow) {
-  transform: scale(1.1);  /* Grow cell by 10% when hovering over empty cells */
-  /*
-   * The :not(.red):not(.yellow) selector ensures this effect only applies
-   * to empty cells, not cells that already have tokens
-   */
+/* Jetons */
+.cell.red {
+  background-color: var(--red);
 }
 
-/* ===== PLAYER TOKEN COLORS ===== */
-/* Red player token styling */
-.red {
-  background-color: #e74c3c;  /* Bright red color for player 1 */
+.cell.yellow {
+  background-color: var(--yellow);
 }
 
-/* Yellow player token styling */
-.yellow {
-  background-color: #f1c40f;  /* Bright yellow color for player 2 */
+/* ====== TEXTE ====== */
+#current-player span.red {
+  color: var(--red);
+  font-weight: bold;
 }
 
+#current-player span.yellow {
+  color: var(--yellow);
+  font-weight: bold;
+}
 
+/* ====== RÉPONSIVE ====== */
+@media (max-width: 600px) {
+  #grid {
+    grid-template-columns: repeat(7, 45px);
+    grid-template-rows: repeat(6, 45px);
+    gap: 6px;
+  }
+
+  .cell {
+    width: 45px;
+    height: 45px;
+  }
+}

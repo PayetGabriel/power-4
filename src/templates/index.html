@@ -21,31 +21,40 @@
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <!-- Main game title -->
-  <h1>Puissance 4</h1>
-  
-  <!-- Current player indicator -->
-  <!-- The span element will be updated by JavaScript to show whose turn it is -->
-  <p id="current-player">
-    Tour: <!-- "Tour" means "Turn" in French -->
-    <span class="red">Rouge</span> <!-- "Rouge" means "Red" in French -->
-  </p>
-  
-  <!-- Game controls -->
-  <div class="game-controls">
-    <BR>
-    <button id="reset-btn" onclick="resetGame()">Nouvelle Partie</button>
-  </div>
-  
-  <!-- Game grid container -->
-  <!-- This div starts empty and is populated with 42 cells by JavaScript -->
-  <!-- Using CSS Grid layout to create the 7x6 Connect Four board -->
-  <BR>
-  <BR>
-  <div id="grid"></div>
+  <header>
+    <!-- Main game title -->
+    <h1>Puissance 4</h1>
+    
+    <!-- Current player indicator -->
+    <!-- The span element will be updated by JavaScript to show whose turn it is -->
+    <div class = "controls"></div>
+      <p id="current-player">
+        Tour: <!-- "Tour" means "Turn" in French -->
+        <span class="red">Rouge</span> <!-- "Rouge" means "Red" in French -->
+      </p>
+      <button id="reset-btn" onclick="resetGame()">Nouvelle Partie</button>
+      <button id="them-toggle">🌞 / 🌙</button>
+    </div>
+  </header>
 
-  <!-- Link to external JavaScript file for game logic -->
-  <!-- Placed at the end so the DOM is fully loaded before the script runs -->
+  <main>
+    <div id="grid"></div>
+  </main>
+
   <script src="/static/script.js"></script>
+
+  <script>
+    const toggleBtn = document.getElementById('them-toggle');
+    const userPref = localStorage.getItem('theme');
+
+    if (userPref === 'dark') {
+      document.body.classList.add('dark');
+    }
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const mode = document.body.classList.contains('dark') ? 'dark' : 'light';
+      localStorage.setItem('theme', mode);
+    });
+  </script>
 </body>
 </html>
