@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Match nul</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #444, #888);
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px #000;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      background-color: #fff;
+      color: #444;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #444;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>🤝 Match nul !</h1>
+  <p>Aucun joueur n’a remporté la partie.</p>
+  <div>
+    <button onclick="window.location.href='/'">Rejouer</button>
+    <button onclick="window.location.href='/menu'">Retour au menu</button>
+  </div>
+</body>
+</html>

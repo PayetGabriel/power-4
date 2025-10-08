@@ -61,7 +61,7 @@ func (g *Game) MakeMove(col int) bool {
 		if g.Board[row][col] == "empty" {
 			// Placer le jeton
 			g.Board[row][col] = g.Turn
-			
+
 			// Vérifier la victoire
 			if g.checkWin() {
 				g.Winner = g.Turn
@@ -76,7 +76,7 @@ func (g *Game) MakeMove(col int) bool {
 			return true
 		}
 	}
-	
+
 	// Colonne pleine
 	return false
 }
@@ -97,10 +97,10 @@ func (g *Game) checkWin() bool {
 		for col := 0; col < COLS; col++ {
 			if g.Board[row][col] != "empty" {
 				// Vérifier les 4 directions : horizontal, vertical, diagonal /, diagonal \
-				if g.checkDirection(row, col, 0, 1) ||  // horizontal
-				   g.checkDirection(row, col, 1, 0) ||  // vertical
-				   g.checkDirection(row, col, 1, 1) ||  // diagonal \
-				   g.checkDirection(row, col, 1, -1) {  // diagonal /
+				if g.checkDirection(row, col, 0, 1) || // horizontal
+					g.checkDirection(row, col, 1, 0) || // vertical
+					g.checkDirection(row, col, 1, 1) || // diagonal \
+					g.checkDirection(row, col, 1, -1) { // diagonal /
 					return true
 				}
 			}

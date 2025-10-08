@@ -17,6 +17,7 @@ var g = game.NewGame()
 
 // handler pour la page principale
 func handler(w http.ResponseWriter, r *http.Request) {
+	// afficher la page principale (index.html) — le JS fera les requêtes /api/game-state
 	err := tmpl.Execute(w, g)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -80,6 +81,39 @@ func resetGameHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(g)
 }
 
+// resultHandler affiche la page de résultat (victoire / match nul)
+func resultHandler(w http.ResponseWriter, r *http.Request) {
+	switch g.Winner {
+	case "red":
+		t, err := template.ParseFiles("src/templates/win.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		// on fournit le nom lisible du gagnant
+		data := map[string]string{"Winner": "Rouge"}
+		t.Execute(w, data)
+	case "yellow":
+		t, err := template.ParseFiles("src/templates/win.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		data := map[string]string{"Winner": "Jaune"}
+		t.Execute(w, data)
+	case "draw":
+		t, err := template.ParseFiles("src/templates/draw.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		t.Execute(w, nil)
+	default:
+		// pas de résultat -> redirige vers le jeu
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
+
 func main() {
 	listener, err := net.Listen("tcp", ":0")
 	if err != nil {
@@ -96,6 +130,9 @@ func main() {
 	http.HandleFunc("/api/game-state", gameStateHandler)
 	http.HandleFunc("/api/make-move", makeMoveHandler)
 	http.HandleFunc("/api/reset-game", resetGameHandler)
+
+	// Route résultat
+	http.HandleFunc("/result", resultHandler)
 
 	// Route pour les fichiers statiques (CSS et JS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("src/static"))))
