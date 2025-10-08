@@ -31,6 +31,29 @@
       <button type="submit">Se connecter</button>
     </form>
 
+    <!-- Bouton 'Règles du jeu' : garde la même structure visuelle que S'inscrire / Se connecter -->
+    <form action="#" method="GET" onsubmit="return false;">
+      <button id="show-rules-btn" type="button">Règles du jeu</button>
+    </form>
+
+    <!-- Overlay des règles : couvre presque tout l'écran et apparaît par-dessus les boutons -->
+    <div id="rules-overlay" class="rules-overlay" aria-hidden="true" style="display:none;">
+      <div class="rules-container" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+        <button id="close-rules" class="close-rules" aria-label="Fermer">×</button>
+        <h2 id="rules-title">Règles du Puissance 4</h2>
+        <div class="rules-body">
+          <p>But : être le premier à aligner 4 pions de sa couleur horizontalement, verticalement ou en diagonale.</p>
+          <ol>
+            <li>Deux joueurs jouent alternativement.</li>
+            <li>À chaque tour, un joueur choisit une colonne et dépose un pion ; il tombe sur la première case vide en bas.</li>
+            <li>Le premier joueur qui aligne 4 de ses pions gagne.</li>
+            <li>Si la grille est remplie sans qu'aucun joueur n'ait aligné 4 pions, la partie est nulle.</li>
+          </ol>
+          <p>Conseils : bloquez les alignements de l'adversaire et essayez de créer des doubles menaces.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Fields and button that will only display after registration or login -->
     <div id="form-section" style="display: none;">
       <!-- Form to redirect to the game -->
@@ -54,6 +77,37 @@
             document.getElementById('form-section').style.display = 'block';
         });
     });
+
+    // Toggle pour l'overlay des règles (couvert presque tout l'écran)
+    const showRulesBtn = document.getElementById('show-rules-btn');
+    const rulesOverlay = document.getElementById('rules-overlay');
+    const closeRulesBtn2 = document.getElementById('close-rules');
+
+    function openRulesOverlay() {
+      rulesOverlay.style.display = 'block';
+      rulesOverlay.setAttribute('aria-hidden', 'false');
+      closeRulesBtn2.focus();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeRulesOverlay() {
+      rulesOverlay.style.display = 'none';
+      rulesOverlay.setAttribute('aria-hidden', 'true');
+      showRulesBtn.focus();
+      document.body.style.overflow = '';
+    }
+
+    showRulesBtn.addEventListener('click', openRulesOverlay);
+    closeRulesBtn2.addEventListener('click', closeRulesOverlay);
+
+    // Close with Escape when overlay open
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && rulesOverlay.getAttribute('aria-hidden') === 'false') {
+        closeRulesOverlay();
+      }
+    });
+
+    // Styles moved to static/styleMenu.css
   </script>
 </body>
 </html>

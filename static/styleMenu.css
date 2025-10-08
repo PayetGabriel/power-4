@@ -1,7 +1,9 @@
 /* Style général pour le menu */
 body {
+    /* Recommended: the project can load 'Lora' from Google Fonts for nicer rules typography */
+    /* Add this to your <head> if you want the webfont: <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet"> */
     font-family: Arial, sans-serif;
-    background-color: #A8DADC;
+    background-color: #89B4D9; /* adjusted to match #457B9D */
     margin: 0;
     padding: 0;
     display: flex;
@@ -11,7 +13,7 @@ body {
 }
 
 form {
-    background-color: #A8DADC;
+    background-color: #BFDDEB; /* lighter card background that pairs with #457B9D */
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -55,3 +57,100 @@ input {
     border-radius: 5px;
     box-sizing: border-box;
 }
+
+/* Styles pour le bouton et l'overlay des règles */
+form > #show-rules-btn {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    background: #457B9D;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.rules-overlay {
+    position: fixed;
+    inset: 4% 4% 4% 4%;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.rules-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    border-radius: 10px;
+}
+.rules-container {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff 0%, #eef9ff 100%); /* soft bluish background */
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    z-index: 1201;
+}
+.rules-container::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(75,150,210,0.95), rgba(43,122,201,0.85));
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 1200;
+}
+.rules-container h2 { margin-top: 0; text-align: center; }
+
+/* Title styling for rules */
+.rules-container h2 {
+    font-family: 'Gloria Hallelujah', 'Comic Sans MS', cursive;
+    font-size: 2.1rem;
+    color: #1F5F8A; /* deeper blue for title */
+    margin-bottom: 0.75rem;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* Align text to the right, larger and bold as requested */
+.rules-body {
+    color: #2B7AC9; /* playful blue, harmonizes with #457B9D */
+    text-align: center;
+    /* Childlike / playful font: recommend 'Gloria Hallelujah' from Google Fonts.
+       Add to your <head>:
+       <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap" rel="stylesheet">
+       Fallbacks: Comic Sans / cursive */
+    font-family: 'Gloria Hallelujah', 'Comic Sans MS', 'Comic Neue', cursive;
+    font-size: 1.9rem; /* slightly larger for kids */
+    font-weight: 700;
+    line-height: 1.6;
+    letter-spacing: 0.4px;
+}
+.rules-body p { margin: 0 0 1rem 0; }
+.rules-body ol { margin: 0; padding: 0; list-style: none; }
+.rules-body li { margin-bottom: 0.75rem; }
+.close-rules {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #ffffff, #eef9ff);
+    border: 2px solid rgba(43,122,201,0.12);
+    color: #1F5F8A;
+    font-size: 1.1rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 1202;
+}
+@media (max-width: 550px) { .rules-overlay { inset: 2% 2% 2% 2%; } }
+.close-rules:hover { background: linear-gradient(180deg,#fff,#e6f5ff); transform: scale(1.05); }
