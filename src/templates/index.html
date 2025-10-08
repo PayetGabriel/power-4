@@ -21,26 +21,25 @@
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <header>
-    <!-- Main game title -->
-    <h1>Puissance 4</h1>
-    
-    <!-- Current player indicator -->
-    <!-- The span element will be updated by JavaScript to show whose turn it is -->
-    <div class = "controls"></div>
-      <p id="current-player">
-        Tour: <!-- "Tour" means "Turn" in French -->
-        <span class="red">Rouge</span> <!-- "Rouge" means "Red" in French -->
-      </p>
-      <button id="reset-btn" onclick="resetGame()">Nouvelle Partie</button>
-      <button id="them-toggle">🌞 / 🌙</button>
-    </div>
-  </header>
+  <div>
+    <header>
+      <!-- Main game title -->
+      <h1>Puissance 4</h1>
+      
+      <!-- Current player indicator -->
+      <!-- The span element will be updated by JavaScript to show whose turn it is -->
+      <div class = "controls"></div>
+        <p id="current-player">Tour: <span class="red">Rouge</span></p>
+        <button id="reset-btn" onclick="resetGame()">Nouvelle Partie</button>
+        <button id="them-toggle">🌞 / 🌙</button>
+      </div>
+    </header>
 
-  <main>
-    <div id="grid"></div>
-  </main>
-
+    <main>
+      <div id="grid"></div>
+    </main>
+  </div>
+  
   <script src="/static/script.js"></script>
 
   <script>
