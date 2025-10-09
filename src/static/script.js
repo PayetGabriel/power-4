@@ -1,19 +1,16 @@
 /*
  * POWER 4 (CONNECT FOUR) GAME - JAVASCRIPT FRONTEND
- * Modifié : redirige vers /result quand la partie est terminée
+ * Ajout : animation de chute du jeton
  */
 
-// ===== CONFIGURATION DU JEU =====
-const COLS = 7;  // Nombre de colonnes dans la grille
-const ROWS = 6;  // Nombre de lignes dans la grille
+const COLS = 7;
+const ROWS = 6;
 
-// ===== ÉLÉMENTS DOM =====
 const grid = document.getElementById("grid");
 const playerDisplay = document.querySelector("#current-player span");
 
-// ===== ÉTAT DU JEU =====
-let gameData = null;  // État du jeu reçu du backend
-let isWaiting = false; // Empêcher les clics multiples pendant les requêtes
+let gameData = null;
+let isWaiting = false;
 
 async function initGame() {
   createGrid();
@@ -33,30 +30,29 @@ function createGrid() {
 }
 
 async function handleColumnClick(col) {
-  if (isWaiting || (gameData && gameData.gameOver)) {
-    return;
-  }
-
+  if (isWaiting || (gameData && gameData.gameOver)) return;
   isWaiting = true;
 
   try {
+    // On récupère la ligne de destination avant d’envoyer le coup
+    const emptyRow = getEmptyRow(col);
+
     const response = await fetch('/api/make-move', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ column: col })
     });
 
     const moveResult = await response.json();
 
     if (moveResult.success) {
+      const player = gameData ? gameData.turn : "red";
+      await animateTokenFall(col, emptyRow, player);
+
       gameData = moveResult.game;
       updateDisplay();
 
-      // Si le jeu est terminé, rediriger vers la page de résultat
       if (gameData.gameOver) {
-        // petit délai pour voir le dernier jeton posé
         setTimeout(() => {
           window.location.href = '/result';
         }, 300);
@@ -65,11 +61,50 @@ async function handleColumnClick(col) {
       console.warn("Coup invalide:", moveResult.message);
     }
   } catch (error) {
-    console.error("Erreur lors de l'envoi du coup:", error);
+    console.error("Erreur lors du coup:", error);
   } finally {
     isWaiting = false;
   }
 }
+
+// Renvoie la première ligne vide d’une colonne
+function getEmptyRow(col) {
+  for (let row = ROWS - 1; row >= 0; row--) {
+    if (gameData.board[row][col] === "empty") return row;
+  }
+  return null;
+}
+
+// Animation de chute
+async function animateTokenFall(col, targetRow, player) {
+  return new Promise(resolve => {
+    const token = document.createElement("div");
+    token.classList.add("falling-token", player);
+    document.body.appendChild(token);
+
+    // On récupère la cellule cible pour position exacte
+    const cellIndex = targetRow * COLS + col;
+    const targetCell = grid.children[cellIndex];
+    const cellRect = targetCell.getBoundingClientRect();
+
+    // Position initiale (au-dessus de la grille)
+    const gridRect = grid.getBoundingClientRect();
+    token.style.left = `${cellRect.left}px`;
+    token.style.top = `${gridRect.top - cellRect.height}px`;
+
+    // Déclenche l’animation
+    requestAnimationFrame(() => {
+      const endY = cellRect.top;
+      token.style.transform = `translateY(${endY - (gridRect.top - cellRect.height)}px)`;
+    });
+
+    token.addEventListener("transitionend", () => {
+      token.remove();
+      resolve();
+    }, { once: true });
+  });
+}
+
 
 async function fetchGameState() {
   try {
@@ -82,16 +117,13 @@ async function fetchGameState() {
 
 function updateDisplay() {
   if (!gameData) return;
-
   const cells = grid.children;
   for (let row = 0; row < ROWS; row++) {
     for (let col = 0; col < COLS; col++) {
       const cellIndex = row * COLS + col;
       const cell = cells[cellIndex];
       const cellValue = gameData.board[row][col];
-
       cell.classList.remove("red", "yellow");
-
       if (cellValue !== "empty") {
         cell.classList.add(cellValue);
       }
@@ -105,18 +137,9 @@ function updateDisplay() {
   }
 }
 
-// suppression de la boîte confirm(); on redirige vers /result à la fin du coup
-function showGameOverMessage(message) {
-  // plus utilisé : conservé pour debug si besoin
-  console.log("Fin de partie:", message);
-}
-
 async function resetGame() {
   try {
-    const response = await fetch('/api/reset-game', {
-      method: 'POST'
-    });
-
+    const response = await fetch('/api/reset-game', { method: 'POST' });
     gameData = await response.json();
     updateDisplay();
   } catch (error) {
@@ -125,11 +148,3 @@ async function resetGame() {
 }
 
 document.addEventListener("DOMContentLoaded", initGame);
-
-function debugGameState() {
-  console.log("État du jeu:", gameData);
-}
-
-function debugReset() {
-  resetGame();
-}
