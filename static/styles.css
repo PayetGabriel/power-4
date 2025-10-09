@@ -143,3 +143,19 @@ button:hover {
     height: 45px;
   }
 }
+
+/* ===== ANIMATION DE CHUTE DU JETON ===== */
+.falling-token {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  transition: transform 0.6s ease-in;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.falling-token.red { background-color: var(--red); }
+.falling-token.yellow { background-color: var(--yellow); }
+
+
