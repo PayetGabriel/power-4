@@ -153,6 +153,10 @@ func main() {
 	http.HandleFunc("/result", resultHandler)
 	http.HandleFunc("/replay", replayHandler)
 
+	// Routes d'authentification
+	// http.HandleFunc("/signup", auth.SignupHandler)
+	// http.HandleFunc("/login", auth.LoginHandler)
+
 	// Route pour les fichiers statiques (CSS et JS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 

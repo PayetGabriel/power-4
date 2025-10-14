@@ -58,6 +58,8 @@ input {
     box-sizing: border-box;
 }
 
+
+
 /* Styles pour le bouton et l'overlay des règles */
 form > #show-rules-btn {
     padding: 0.6rem 1rem;

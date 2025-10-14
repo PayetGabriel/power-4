@@ -6,13 +6,13 @@
 /* ===== COLOR VARIABLES ===== */
 :root {
   /* Light mode palette */
-  --bg: #E8F0F2;
+  --bg: #c0ffc7;
   --text: #333;
-  --board-bg: #A8D0E6;
+  --board-bg: #87e8be;
   --cell-bg: #F8F9FA;
   --red: #E76F51;
   --yellow: #F4D35E;
-  --border: #7D9BA6;
+  --border: #18ac74;
 }
 
 body.dark {
