@@ -1,0 +1,132 @@
+/*
+ * POWER 4 (CONNECT FOUR) GAME - CSS STYLES
+ * 
+ * This file contains all the visual styling for the Connect Four game.
+ * It uses modern CSS techniques like CSS Grid and transforms.
+ * The design follows the KISS principle with clean, simple styling.
+ */
+
+/* ===== GLOBAL STYLES ===== */
+/* Main page layout and typography */
+body {
+  font-family: Arial, sans-serif;  /* Clean, readable font */
+  text-align: center;              /* Center all content horizontally */
+  background-color: #f0f0f0;       /* Light gray background */
+  margin: 0;                       /* Remove default browser margins */
+  padding: 20px;                   /* Add some spacing around the page */
+}
+
+/* Main title styling */
+h1 {
+  color: #333;           /* Dark gray color for good contrast */
+  margin-bottom: 10px;   /* Small space below the title */
+}
+
+/* Current player indicator styling */
+#current-player {
+  font-size: 1.2em;      /* Slightly larger than normal text */
+  font-weight: bold;     /* Make it stand out */
+  margin-bottom: 10px;   /* Reduced space for game controls */
+}
+
+/* Game controls styling */
+.game-controls {
+  margin-bottom: 20px;   /* Space before the game grid */
+}
+
+#reset-btn {
+  background-color: #3498db;  /* Nice blue color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+#reset-btn:hover {
+  background-color: #2980b9;  /* Darker blue on hover */
+}
+
+#reset-btn:active {
+  background-color: #21618c;  /* Even darker when clicked */
+}
+
+/* ===== GAME GRID STYLES ===== */
+/* The main game board using CSS Grid layout */
+#grid {
+  display: grid;                                      /* Use CSS Grid for layout */
+  grid-template-columns: repeat(7, 60px);             /* 7 columns, each 60px wide */
+  grid-template-rows: repeat(6, 60px);                /* 6 rows, each 60px tall */
+  gap: 5px;                                           /* 5px space between cells */
+  justify-content: center;                            /* Center the grid horizontally */
+  margin: 0 auto;                                     /* Center the grid container */
+  background-color: #0066cc;                          /* Blue background (classic Connect Four color) */
+  padding: 10px;                                      /* Space inside the grid container */
+  border-radius: 10px;                               /* Rounded corners for modern look */
+  max-width: calc(7 * 60px + 6 * 5px + 20px);       /* Calculate exact width needed */
+  /*
+   * Width calculation breakdown:
+   * - 7 columns × 60px = 420px (cell widths)
+   * - 6 gaps × 5px = 30px (spaces between cells)
+   * - 20px = padding (10px left + 10px right)
+   * - Total = 470px maximum width
+   */
+}
+
+/* ===== INDIVIDUAL CELL STYLES ===== */
+/* Each clickable cell in the game grid */
+.cell {
+  width: 60px;                    /* Fixed width for consistent grid */
+  height: 60px;                   /* Fixed height (square cells) */
+  border-radius: 50%;             /* Make cells perfectly round (circles) */
+  background-color: white;        /* Empty cells are white */
+  cursor: pointer;                /* Show hand cursor on hover (indicates clickable) */
+  transition: transform 0.2s;     /* Smooth animation for hover effects */
+  position: relative;              /* Added to ensure .star aligns correctly */
+}
+
+/* ===== INTERACTIVE EFFECTS ===== */
+/* Hover effect for empty cells only */
+.cell:hover:not(.red):not(.yellow) {
+  transform: scale(1.1);  /* Grow cell by 10% when hovering over empty cells */
+  /*
+   * The :not(.red):not(.yellow) selector ensures this effect only applies
+   * to empty cells, not cells that already have tokens
+   */
+}
+
+/* ===== PLAYER TOKEN COLORS ===== */
+/* Red player token styling */
+.red {
+  background-color: #e74c3c;  /* Bright red color for player 1 */
+}
+
+/* Yellow player token styling */
+.yellow {
+  background-color: #f1c40f;  /* Bright yellow color for player 2 */
+}
+
+/* ===== STAR STYLING ===== */
+.star {
+  width: 20px;                     /* Small size for the star */
+  height: 20px;                    /* Keep it square */
+  background-color: #3498db;       /* Bright blue color for visibility */
+  border-radius: 50%;              /* Make it circular */
+  position: absolute;              /* Position relative to the cell */
+  top: 50%;                        /* Center vertically */
+  left: 50%;                       /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for perfect centering */
+  z-index: 100;                   /* Ensure visibility above other elements */
+  box-shadow: 0 0 10px #2980b9;    /* Add a glowing effect */
+}
+
+/*
+ * COLOR CHOICES EXPLAINED:
+ * - #e74c3c: A vibrant red that's easy to distinguish
+ * - #f1c40f: A bright yellow that contrasts well with red
+ * - #0066cc: Classic Connect Four blue for the game board
+ * - #f0f0f0: Light gray background that doesn't compete with game colors
+ */
