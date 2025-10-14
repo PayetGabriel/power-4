@@ -1,47 +1,48 @@
 <!--
   POWER 4 (CONNECT FOUR) GAME - HTML STRUCTURE
-  
-  This is the main HTML file for a Connect Four game.
-  It follows the KISS principle (Keep It Simple, Stupid) with minimal markup.
-  
-  Structure:
-  - Title and current player indicator
-  - Empty grid container (populated by JavaScript)
-  - Links to CSS and JavaScript files
+  Main HTML for a Connect Four game.
+  Combines functional JS structure (reset, theme toggle) and detailed comments.
 -->
 
 <!DOCTYPE html>
-<html lang="fr"> <!-- French language for "Puissance 4" (Connect Four in French) -->
+<html lang="fr">
 <head>
-  <!-- Basic meta information -->
-  <meta charset="UTF-8"> <!-- Character encoding for proper text display -->
-  <title>Puissance 4</title> <!-- Browser tab title -->
+  <meta charset="UTF-8">
+  <title>Puissance 4</title>
   
   <!-- Link to external CSS file for styling -->
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <div>
-    <header>
-      <!-- Main game title -->
-      <h1>Puissance 4</h1>
-      
-      <!-- Current player indicator -->
-      <!-- The span element will be updated by JavaScript to show whose turn it is -->
-      <div class = "controls"></div>
-        <p id="current-player">Tour: <span class="red">Rouge</span></p>
-        <button id="reset-btn" onclick="resetGame()">Nouvelle Partie</button>
-        <button id="them-toggle">🌞 / 🌙</button>
-      </div>
-    </header>
+  <header>
+    <!-- Main game title -->
+    <h1>Puissance 4</h1>
+    
+    <!-- Current player indicator and controls -->
+    <!-- The .controls div is left empty for JS alignment, buttons are outside to keep JS functional -->
+    <div class="controls"></div>
+    
+    <!-- Display whose turn it is -->
+    <p id="current-player">
+      Tour: <span class="red">Rouge</span>
+    </p>
+    
+    <!-- Game buttons -->
+    <div class="controls">
+      <button id="reset-btn" onclick="resetGame()">Nouvelle Partie</button>
+      <button id="them-toggle">🌞 / 🌙</button>
+    </div>
+  </header>
 
-    <main>
-      <div id="grid"></div>
-    </main>
-  </div>
-  
+  <main>
+    <!-- Game grid container: populated with 42 cells via JS -->
+    <div id="grid"></div>
+  </main>
+
+  <!-- Game logic -->
   <script src="/static/script.js"></script>
 
+  <!-- Theme toggle logic -->
   <script>
     const toggleBtn = document.getElementById('them-toggle');
     const userPref = localStorage.getItem('theme');
