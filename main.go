@@ -11,7 +11,7 @@ import (
 	"power-4/src/game"
 )
 
-var tmpl = template.Must(template.ParseFiles("src/templates/index.html"))
+var tmpl = template.Must(template.ParseFiles("templates/index.html"))
 
 var g = game.NewGame()
 
@@ -19,6 +19,15 @@ var g = game.NewGame()
 func handler(w http.ResponseWriter, r *http.Request) {
 	// afficher la page principale (index.html) — le JS fera les requêtes /api/game-state
 	err := tmpl.Execute(w, g)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// handler pour la page du menu
+func menuHandler(w http.ResponseWriter, r *http.Request) {
+	tmplMenu := template.Must(template.ParseFiles("templates/indexMenu.html"))
+	err := tmplMenu.Execute(w, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -85,7 +94,7 @@ func resetGameHandler(w http.ResponseWriter, r *http.Request) {
 func resultHandler(w http.ResponseWriter, r *http.Request) {
 	switch g.Winner {
 	case "red":
-		t, err := template.ParseFiles("src/templates/win.html")
+		t, err := template.ParseFiles("templates/win.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -94,7 +103,7 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 		data := map[string]string{"Winner": "Rouge"}
 		t.Execute(w, data)
 	case "yellow":
-		t, err := template.ParseFiles("src/templates/win.html")
+		t, err := template.ParseFiles("templates/win.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -102,7 +111,7 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 		data := map[string]string{"Winner": "Jaune"}
 		t.Execute(w, data)
 	case "draw":
-		t, err := template.ParseFiles("src/templates/draw.html")
+		t, err := template.ParseFiles("templates/draw.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -117,7 +126,7 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 // replayHandler réinitialise le jeu puis renvoie à la page d'accueil
 func replayHandler(w http.ResponseWriter, r *http.Request) {
 	g.Reset()
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/game", http.StatusSeeOther) // Redirige vers le jeu après avoir réinitialisé
 }
 
 func main() {
@@ -129,8 +138,11 @@ func main() {
 	port := listener.Addr().(*net.TCPAddr).Port
 	fmt.Printf("Serveur démarré sur http://localhost:%d\n", port)
 
-	// Route pour la page principale
-	http.HandleFunc("/", handler)
+	// Route pour le menu
+	http.HandleFunc("/", menuHandler)
+
+	// Route pour le jeu
+	http.HandleFunc("/game", handler)
 
 	// Routes API
 	http.HandleFunc("/api/game-state", gameStateHandler)
@@ -141,8 +153,12 @@ func main() {
 	http.HandleFunc("/result", resultHandler)
 	http.HandleFunc("/replay", replayHandler)
 
+	// Routes d'authentification
+	// http.HandleFunc("/signup", auth.SignupHandler)
+	// http.HandleFunc("/login", auth.LoginHandler)
+
 	// Route pour les fichiers statiques (CSS et JS)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("src/static"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	log.Fatal(http.Serve(listener, nil))
 }

@@ -40,7 +40,7 @@
     <div id="rules-overlay" class="rules-overlay" aria-hidden="true" style="display:none;">
       <div class="rules-container" role="dialog" aria-modal="true" aria-labelledby="rules-title">
         <button id="close-rules" class="close-rules" aria-label="Fermer">×</button>
-        <h2 id="rules-title">Règles du Puissance 4</h2>
+        <h2 id="rules-title">Règles du Puissance 4</h2>
         <div class="rules-body">
           <p>But : être le premier à aligner 4 pions de sa couleur horizontalement, verticalement ou en diagonale.</p>
           <ol>
@@ -84,7 +84,7 @@
     const closeRulesBtn2 = document.getElementById('close-rules');
 
     function openRulesOverlay() {
-      rulesOverlay.style.display = 'block';
+      rulesOverlay.style.display = 'flex';  // <-- ici
       rulesOverlay.setAttribute('aria-hidden', 'false');
       closeRulesBtn2.focus();
       document.body.style.overflow = 'hidden';

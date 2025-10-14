@@ -25,7 +25,7 @@ func hashPassword(pw string) string {
 // Crée un nouveau compte
 func SignupHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.ServeFile(w, r, "src/templates/signup.html")
+		http.ServeFile(w, r, "templates/signup.html")
 		return
 	}
 
@@ -49,7 +49,7 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 // Connexion utilisateur
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.ServeFile(w, r, "src/templates/login.html")
+		http.ServeFile(w, r, "templates/login.html")
 		return
 	}
 

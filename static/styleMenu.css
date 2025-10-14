@@ -1,0 +1,184 @@
+/*
+ * POWER 4 - MENU PAGE STYLING (version moderne & sobre)
+ */
+
+/* ===== COLOR VARIABLES ===== */
+:root {
+  --bg: linear-gradient(160deg, #0e0e12, #1a1c26);
+  --text: #f5f5f5;
+  --accent: #4f46e5;          /* bleu-violet élégant */
+  --accent-hover: #6366f1;    /* plus clair au survol */
+  --card-bg: #1f2230;         /* fond de bloc sobre */
+  --input-bg: #2a2d3b;
+  --input-border: #3f4253;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== GLOBAL ===== */
+body {
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+}
+
+/* ===== HEADER ===== */
+h1 {
+  font-size: 2.4rem;
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* ===== MAIN ===== */
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+/* ===== FORMS ===== */
+form {
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: 16px;
+  width: 300px;
+  box-shadow: 0 6px 16px var(--shadow);
+  text-align: center;
+  transition: transform 0.25s ease;
+}
+
+form:hover {
+  transform: translateY(-4px);
+}
+
+/* ===== LABELS & INPUTS ===== */
+label {
+  display: block;
+  margin-bottom: 6px;
+  text-align: left;
+  font-weight: 500;
+  color: #ddd;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 1rem;
+  text-align: center;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+}
+
+/* ===== BUTTONS ===== */
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+/* ===== RÈGLES ===== */
+#show-rules-btn {
+  background: #9333ea; /* violet sobre */
+}
+
+#show-rules-btn:hover {
+  background: #a855f7;
+}
+
+/* ===== OVERLAY ===== */
+.rules-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  animation: fadeInOverlay 0.4s ease;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== FENÊTRE DES RÈGLES ===== */
+.rules-container {
+  position: relative;
+  max-width: 550px;
+  width: 90%;
+  background: #1f2230;
+  border-radius: 18px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  animation: popIn 0.35s ease forwards;
+  color: #e8e8e8;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ===== TITRE ===== */
+.rules-container h2 {
+  text-align: center;
+  color: var(--accent-hover);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+
+/* ===== TEXTE ===== */
+.rules-body {
+  color: #d4d4d8;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+/* ===== CLOSE BUTTON ===== */
+.close-rules {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  color: #ccc;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.close-rules:hover {
+  color: #fff;
+  transform: scale(1.1);
+}
