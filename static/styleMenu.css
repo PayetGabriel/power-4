@@ -1,0 +1,208 @@
+/* Style général pour le menu */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #89b4d9; /* adjusted to match #457B9D */
+    margin: 0;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    border:rgba(0, 0, 0, 0.1);
+    border-width: 2px;
+}
+
+form {
+    background-color: #BFDDEB; /* lighter card background that pairs with #457B9D */
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    text-align: center;
+    margin-bottom: 12%;
+    border:rgba(0, 0, 0, 0.1);
+    border-width: 6px;
+}
+
+/* Boutons */
+button {
+  min-width: 180px;
+  padding: 10px 20px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6ee7b7, #3b82f6); /* vert -> bleu */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+
+#form-section {
+    margin-top: 20px;
+}
+
+label {
+    color: #1D3557;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #457B9D;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+
+
+/* Styles pour le bouton et l'overlay des règles */
+#show-rules-btn {
+  background: #6e98e7; /* même dégradé que les autres */
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 180px;
+  padding: 15px 15px;
+}
+
+#show-rules-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  margin: 1.5em 0;
+}
+
+/* Boutons Règles du jeu et Histoire du jeu alignés sur une ligne */
+.menu-row button {
+  width: 275px;
+  height: 50px;
+  background: #6e98e7; /* dégradé inversé */
+}
+
+.menu-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem; /* espace entre les deux */
+  margin-top: 2em;
+}
+
+.centered form,
+.menu-row form {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 25px 30px;
+  border-radius: 16px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.rules-overlay {
+    position: fixed;
+    inset: 4% 4% 4% 4%;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rules-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    border-radius: 10px;
+}
+
+.rules-container {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff 0%, #eef9ff 100%); /* soft bluish background */
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    z-index: 1201;
+}
+
+.rules-container::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(75,150,210,0.95), rgba(43,122,201,0.85));
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 1200;
+}
+
+.rules-container h2 { margin-top: 0; text-align: center; }
+
+/* Title styling for rules */
+.rules-container h2 {
+    font-family: 'Gloria Hallelujah', 'Comic Sans MS', cursive;
+    font-size: 2.1rem;
+    color: #1F5F8A; /* deeper blue for title */
+    margin-bottom: 0.75rem;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* Align text to the right, larger and bold as requested */
+.rules-body {
+    color: #2B7AC9; /* playful blue, harmonizes with #457B9D */
+    text-align: center;
+    font-family: 'Gloria Hallelujah', 'Comic Sans MS', 'Comic Neue', cursive;
+    font-size: 1.9rem; /* slightly larger for kids */
+    font-weight: 700;
+    line-height: 1.6;
+    letter-spacing: 0.4px;
+}
+.rules-body p { margin: 0 0 1rem 0; }
+
+.rules-body ol { margin: 0; padding: 0; list-style: none; }
+
+.rules-body li { margin-bottom: 0.75rem; }
+
+.close-rules {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #ffffff, #eef9ff);
+    border: 2px solid rgba(43,122,201,0.12);
+    color: #1F5F8A;
+    font-size: 1.1rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 1202;
+}
+
+@media (max-width: 550px) { .rules-overlay { inset: 2% 2% 2% 2%; } }
+
+.close-rules:hover { background: linear-gradient(180deg,#fff,#e6f5ff); transform: scale(1.05); }
