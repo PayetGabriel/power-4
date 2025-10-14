@@ -1,3 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Inscription</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/styleMenu.css">
+</head>
+<body>
+  <main>
+    <h1>S'inscrire</h1>
+    <form action="/register" method="POST">
+      <label for="username">Nom d'utilisateur</label>
+      <input id="username" name="username" type="text" required>
+
+      <label for="password">Mot de passe</label>
+      <input id="password" name="password" type="password" required>
+
+      <button type="submit">Créer un compte</button>
+    </form>
+    <p><a href="/">Retour</a></p>
+  </main>
+</body>
+</html>
 <!-- signup.html -->
 <form method="POST" action="/signup">
   <h2>Créer un compte</h2>
