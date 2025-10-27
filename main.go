@@ -126,10 +126,21 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// replay : reset + redirection
+// replay : reset + redirection en conservant le mode (depuis query param)
 func replayHandler(w http.ResponseWriter, r *http.Request) {
-	g.Reset()
-	http.Redirect(w, r, "/game", http.StatusSeeOther)
+	mode := r.URL.Query().Get("mode")
+	if mode == "" && g != nil && g.Mode != "" {
+		mode = g.Mode
+	}
+	if mode == "" {
+		mode = "normal"
+	}
+
+	// recréer clairement la partie dans le mode demandé
+	g = game.NewGame(mode)
+
+	// rediriger vers /game?mode=... pour que la page frontend récupère le bon plateau
+	http.Redirect(w, r, "/game?mode="+mode, http.StatusSeeOther)
 }
 
 func main() {

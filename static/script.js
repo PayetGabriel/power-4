@@ -84,7 +84,9 @@ async function handleColumnClick(col) {
       updateDisplay();
 
       if (gameData.gameOver) {
-        setTimeout(() => window.location.href = '/result', 300);
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get('mode') || gameData.mode || 'normal';
+        setTimeout(() => window.location.href = `/result?mode=${encodeURIComponent(mode)}`, 300);
       }
     } else {
       console.warn("Coup invalide:", moveResult.message);
@@ -189,8 +191,8 @@ function updateDisplay() {
 async function resetGame() {
   try {
     const params = new URLSearchParams(window.location.search);
-    const mode = params.get('mode') || 'normal';
-    const response = await fetch(`/api/reset-game?mode=${mode}`, { method: 'POST' });
+    const mode = params.get('mode') || (gameData && gameData.mode) || 'normal';
+    const response = await fetch(`/api/reset-game?mode=${encodeURIComponent(mode)}`, { method: 'POST' });
     gameData = await response.json();
     createGrid();
     updateDisplay();
@@ -198,5 +200,6 @@ async function resetGame() {
     console.error(error);
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", initGame);

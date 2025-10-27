@@ -46,8 +46,17 @@
   <h1>🏆 Victoire !</h1>
   <p class="winner">{{.Winner}} a gagné la partie 🎉</p>
   <div>
-    <button onclick="window.location.href='/replay'">Rejouer</button>
+    <button id="replay-btn">Rejouer</button>
     <button onclick="window.location.href='/menu'">Retour au menu</button>
   </div>
+
+  <script>
+    // Redirige vers /replay en conservant le mode choisi
+    document.getElementById('replay-btn').addEventListener('click', () => {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get('mode') || 'normal';
+      window.location.href = `/replay?mode=${encodeURIComponent(mode)}`;
+    });
+  </script>
 </body>
 </html>
