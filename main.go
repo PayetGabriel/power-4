@@ -10,14 +10,24 @@ import (
 	"power-4/src/game"
 )
 
-var tmpl = template.Must(template.ParseFiles("src/templates/index.html"))
+var tmpl = template.Must(template.ParseFiles("templates/index.html"))
 
 var g = game.NewGame()
 
 // handler pour la page principale
 func handler(w http.ResponseWriter, r *http.Request) {
 	// afficher la page principale (index.html) — le JS fera les requêtes /api/game-state
+	// afficher la page principale (index.html) — le JS fera les requêtes /api/game-state
 	err := tmpl.Execute(w, g)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// handler pour la page du menu
+func menuHandler(w http.ResponseWriter, r *http.Request) {
+	tmplMenu := template.Must(template.ParseFiles("templates/indexMenu.html"))
+	err := tmplMenu.Execute(w, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -128,8 +138,11 @@ func main() {
 	port := listener.Addr().(*net.TCPAddr).Port
 	fmt.Printf("Serveur démarré sur http://localhost:%d\n", port)
 
-	// Route pour la page principale
-	http.HandleFunc("/", handler)
+	// Route pour le menu
+	http.HandleFunc("/", menuHandler)
+
+	// Route pour le jeu
+	http.HandleFunc("/game", handler)
 
 	// Routes API
 	http.HandleFunc("/api/game-state", gameStateHandler)
@@ -141,7 +154,7 @@ func main() {
 	http.HandleFunc("/replay", replayHandler)
 
 	// Route pour les fichiers statiques (CSS et JS)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("src/static"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	log.Fatal(http.Serve(listener, nil))
 
