@@ -18,7 +18,7 @@ import (
 
 var (
 	tmpl = template.Must(template.ParseFiles("templates/index.html"))
-	g    = game.NewGame()
+	g    = game.NewGame("easy")
 )
 
 // Page principale du jeu
@@ -179,6 +179,7 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 func replayHandler(w http.ResponseWriter, r *http.Request) {
 	g.Reset()
 	http.Redirect(w, r, "/game", http.StatusSeeOther)
+	http.Redirect(w, r, "/game", http.StatusSeeOther)
 }
 
 func main() {
@@ -191,20 +192,22 @@ func main() {
 		log.Fatalf("Erreur lors de l'écoute : %v", err)
 	}
 	port := listener.Addr().(*net.TCPAddr).Port
-	fmt.Println("🎮Ctrl + Click sur le lien pour lancer")
-	fmt.Printf("✅ Serveur démarré sur http://localhost:%d\n", port)
-	fmt.Println("🛑Ctrl + C pour aretter le programme")
+	fmt.Printf("Serveur démarré sur http://localhost:%d\n", port)
 
-	// Routes
-	http.HandleFunc("/", menuHandler)
-	http.HandleFunc("/register", registerHandler)
-	http.HandleFunc("/game", handler)
+	// Route pour la page principale
+	http.HandleFunc("/", handler)
+
+	// Routes API
 	http.HandleFunc("/api/game-state", gameStateHandler)
 	http.HandleFunc("/api/make-move", makeMoveHandler)
 	http.HandleFunc("/api/reset-game", resetGameHandler)
+
+	// Route résultat
 	http.HandleFunc("/result", resultHandler)
 	http.HandleFunc("/replay", replayHandler)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	// Route pour les fichiers statiques (CSS et JS)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("src/static"))))
 
 	// Gestion des signaux d'arrêt
 	stop := make(chan os.Signal, 1)

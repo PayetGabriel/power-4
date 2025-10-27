@@ -4,10 +4,12 @@ import "encoding/json"
 
 // Game représente l'état du jeu Puissance 4
 type Game struct {
-	Board    [][]string `json:"board"`    // Plateau de jeu : "empty", "red", "yellow"
-	Turn     string     `json:"turn"`     // Tour actuel : "red" ou "yellow"
-	Winner   string     `json:"winner"`   // Gagnant : "", "red", "yellow", ou "draw"
-	GameOver bool       `json:"gameOver"` // Indique si le jeu est terminé
+	Board     [][]string `json:"board"`     // Plateau de jeu : "empty", "red", "yellow"
+	Turn      string     `json:"turn"`      // Tour actuel : "red" ou "yellow"
+	Winner    string     `json:"winner"`    // Gagnant : "", "red", "yellow", ou "draw"
+	GameOver  bool       `json:"gameOver"`  // Indique si le jeu est terminé
+	Mode      string     `json:"mode"`      // Mode de difficulté : easy, medium, normal, hard
+	WinLength int        `json:"winLength"` // Longueur de ligne nécessaire pour gagner
 }
 
 // MoveRequest représente une demande de coup
@@ -22,47 +24,56 @@ type MoveResponse struct {
 	Message string `json:"message"`
 }
 
-// NewGame crée une nouvelle partie
-func NewGame() *Game {
-	board := make([][]string, ROWS)
-	for i := 0; i < ROWS; i++ {
-		row := make([]string, COLS)
-		for j := 0; j < COLS; j++ {
+// NewGame crée une nouvelle partie selon le mode
+func NewGame(mode string) *Game {
+	var rows, cols, winLength int
+
+	switch mode {
+	case "easy":
+		rows, cols, winLength = 6, 7, 3
+	case "medium":
+		rows, cols, winLength = 6, 9, 5
+	case "normal":
+		rows, cols, winLength = 6, 7, 4
+	case "hard":
+		rows, cols, winLength = 7, 8, 7
+	default:
+		rows, cols, winLength = 6, 7, 4
+	}
+
+	board := make([][]string, rows)
+	for i := 0; i < rows; i++ {
+		row := make([]string, cols)
+		for j := 0; j < cols; j++ {
 			row[j] = "empty"
 		}
 		board[i] = row
 	}
+
 	return &Game{
-		Board:    board,
-		Turn:     "red",
-		Winner:   "",
-		GameOver: false,
+		Board:     board,
+		Turn:      "red",
+		Winner:    "",
+		GameOver:  false,
+		Mode:      mode,
+		WinLength: winLength,
 	}
 }
 
-// Dimensions du plateau Puissance 4 classique
-const ROWS = 6
-const COLS = 7
-
 // MakeMove effectue un coup dans la colonne spécifiée
 func (g *Game) MakeMove(col int) bool {
-	// Vérifier si le jeu est terminé
 	if g.GameOver {
 		return false
 	}
 
-	// Vérifier si la colonne est valide
-	if col < 0 || col >= COLS {
+	if col < 0 || col >= len(g.Board[0]) {
 		return false
 	}
 
-	// Trouver la première case vide dans la colonne (en partant du bas)
-	for row := ROWS - 1; row >= 0; row-- {
+	for row := len(g.Board) - 1; row >= 0; row-- {
 		if g.Board[row][col] == "empty" {
-			// Placer le jeton
 			g.Board[row][col] = g.Turn
 
-			// Vérifier la victoire
 			if g.checkWin() {
 				g.Winner = g.Turn
 				g.GameOver = true
@@ -70,14 +81,12 @@ func (g *Game) MakeMove(col int) bool {
 				g.Winner = "draw"
 				g.GameOver = true
 			} else {
-				// Changer de joueur
 				g.switchPlayer()
 			}
 			return true
 		}
 	}
 
-	// Colonne pleine
 	return false
 }
 
@@ -92,15 +101,13 @@ func (g *Game) switchPlayer() {
 
 // checkWin vérifie s'il y a un gagnant
 func (g *Game) checkWin() bool {
-	// Vérifier toutes les positions possibles
-	for row := 0; row < ROWS; row++ {
-		for col := 0; col < COLS; col++ {
+	for row := 0; row < len(g.Board); row++ {
+		for col := 0; col < len(g.Board[0]); col++ {
 			if g.Board[row][col] != "empty" {
-				// Vérifier les 4 directions : horizontal, vertical, diagonal /, diagonal \
-				if g.checkDirection(row, col, 0, 1) || // horizontal
-					g.checkDirection(row, col, 1, 0) || // vertical
-					g.checkDirection(row, col, 1, 1) || // diagonal \
-					g.checkDirection(row, col, 1, -1) { // diagonal /
+				if g.checkDirection(row, col, 0, 1) ||
+					g.checkDirection(row, col, 1, 0) ||
+					g.checkDirection(row, col, 1, 1) ||
+					g.checkDirection(row, col, 1, -1) {
 					return true
 				}
 			}
@@ -116,30 +123,28 @@ func (g *Game) checkDirection(startRow, startCol, deltaRow, deltaCol int) bool {
 		return false
 	}
 
-	count := 1 // Compter le jeton de départ
+	count := 1
 
-	// Vérifier dans une direction
 	row, col := startRow+deltaRow, startCol+deltaCol
-	for count < 4 && row >= 0 && row < ROWS && col >= 0 && col < COLS && g.Board[row][col] == player {
+	for count < g.WinLength && row >= 0 && row < len(g.Board) && col >= 0 && col < len(g.Board[0]) && g.Board[row][col] == player {
 		count++
 		row += deltaRow
 		col += deltaCol
 	}
 
-	// Vérifier dans la direction opposée
 	row, col = startRow-deltaRow, startCol-deltaCol
-	for count < 4 && row >= 0 && row < ROWS && col >= 0 && col < COLS && g.Board[row][col] == player {
+	for count < g.WinLength && row >= 0 && row < len(g.Board) && col >= 0 && col < len(g.Board[0]) && g.Board[row][col] == player {
 		count++
 		row -= deltaRow
 		col -= deltaCol
 	}
 
-	return count >= 4
+	return count >= g.WinLength
 }
 
 // isBoardFull vérifie si le plateau est plein (match nul)
 func (g *Game) isBoardFull() bool {
-	for col := 0; col < COLS; col++ {
+	for col := 0; col < len(g.Board[0]); col++ {
 		if g.Board[0][col] == "empty" {
 			return false
 		}
@@ -152,7 +157,7 @@ func (g *Game) ToJSON() ([]byte, error) {
 	return json.Marshal(g)
 }
 
-// Reset remet le jeu à zéro
+// Reset remet le jeu à zéro en conservant le mode
 func (g *Game) Reset() {
-	*g = *NewGame()
+	*g = *NewGame(g.Mode) // passer le mode actuel pour conserver la configuration
 }
