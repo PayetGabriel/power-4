@@ -11,14 +11,19 @@ import (
 	"power-4/src/game"
 )
 
-var tmpl = template.Must(template.ParseFiles("templates/index.html"))
+var g *game.Game
 
-var g = game.NewGame()
+// handler pour la page principale du jeu
+func gameHandler(w http.ResponseWriter, r *http.Request) {
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "normal"
+	}
 
-// handler pour la page principale
-func handler(w http.ResponseWriter, r *http.Request) {
-	// afficher la page principale (index.html) — le JS fera les requêtes /api/game-state
-	err := tmpl.Execute(w, g)
+	g = game.NewGame(mode) // initialisation selon difficulté
+
+	tmpl := template.Must(template.ParseFiles("templates/index.html"))
+	err := tmpl.Execute(w, nil) // <--- PAS g
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -33,13 +38,22 @@ func menuHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// gameStateHandler retourne l'état actuel du jeu en JSON
+// handler pour choisir la difficulté
+func difficultyHandler(w http.ResponseWriter, r *http.Request) {
+	tmplDiff := template.Must(template.ParseFiles("templates/difficulty.html"))
+	err := tmplDiff.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// API pour récupérer l'état du jeu
 func gameStateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(g)
 }
 
-// makeMoveHandler traite un coup de joueur
+// API pour jouer un coup
 func makeMoveHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
@@ -54,7 +68,6 @@ func makeMoveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	success := g.MakeMove(moveReq.Column)
-
 	response := game.MoveResponse{
 		Success: success,
 		Game:    g,
@@ -78,55 +91,45 @@ func makeMoveHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// resetGameHandler remet le jeu à zéro
+// API pour réinitialiser le jeu
 func resetGameHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 		return
 	}
 
-	g.Reset()
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "normal"
+	}
+
+	g = game.NewGame(mode)
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(g)
 }
 
-// resultHandler affiche la page de résultat (victoire / match nul)
+// page de résultat
 func resultHandler(w http.ResponseWriter, r *http.Request) {
 	switch g.Winner {
 	case "red":
-		t, err := template.ParseFiles("templates/win.html")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		// on fournit le nom lisible du gagnant
-		data := map[string]string{"Winner": "Rouge"}
-		t.Execute(w, data)
+		t, _ := template.ParseFiles("templates/win.html")
+		t.Execute(w, map[string]string{"Winner": "Rouge"})
 	case "yellow":
-		t, err := template.ParseFiles("templates/win.html")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		data := map[string]string{"Winner": "Jaune"}
-		t.Execute(w, data)
+		t, _ := template.ParseFiles("templates/win.html")
+		t.Execute(w, map[string]string{"Winner": "Jaune"})
 	case "draw":
-		t, err := template.ParseFiles("templates/draw.html")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		t, _ := template.ParseFiles("templates/draw.html")
 		t.Execute(w, nil)
 	default:
-		// pas de résultat -> redirige vers le jeu
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
-// replayHandler réinitialise le jeu puis renvoie à la page d'accueil
+// replay : reset + redirection
 func replayHandler(w http.ResponseWriter, r *http.Request) {
 	g.Reset()
-	http.Redirect(w, r, "/game", http.StatusSeeOther) // Redirige vers le jeu après avoir réinitialisé
+	http.Redirect(w, r, "/game", http.StatusSeeOther)
 }
 
 func main() {
@@ -138,26 +141,18 @@ func main() {
 	port := listener.Addr().(*net.TCPAddr).Port
 	fmt.Printf("Serveur démarré sur http://localhost:%d\n", port)
 
-	// Route pour le menu
+	// routes
 	http.HandleFunc("/", menuHandler)
+	http.HandleFunc("/difficulty", difficultyHandler)
+	http.HandleFunc("/game", gameHandler)
 
-	// Route pour le jeu
-	http.HandleFunc("/game", handler)
-
-	// Routes API
 	http.HandleFunc("/api/game-state", gameStateHandler)
 	http.HandleFunc("/api/make-move", makeMoveHandler)
 	http.HandleFunc("/api/reset-game", resetGameHandler)
 
-	// Route résultat
 	http.HandleFunc("/result", resultHandler)
 	http.HandleFunc("/replay", replayHandler)
 
-	// Routes d'authentification
-	// http.HandleFunc("/signup", auth.SignupHandler)
-	// http.HandleFunc("/login", auth.LoginHandler)
-
-	// Route pour les fichiers statiques (CSS et JS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	log.Fatal(http.Serve(listener, nil))

@@ -4,7 +4,7 @@
 
 /* ===== COLOR VARIABLES ===== */
 :root {
-  --bg: linear-gradient(160deg, #0e0e12, #1a1c26);
+  --bg: linear-gradient(160deg, #4d4dff, #ec30dc);
   --text: #f5f5f5;
   --accent: #4f46e5;          /* bleu-violet élégant */
   --accent-hover: #6366f1;    /* plus clair au survol */
@@ -162,6 +162,8 @@ button:hover {
 
 /* ===== TEXTE ===== */
 .rules-body {
+  text-align: left;
+  text-justify: auto;
   color: #d4d4d8;
   line-height: 1.6;
   font-size: 1.1rem;
@@ -183,4 +185,43 @@ button:hover {
 .close-rules:hover {
   color: #fff;
   transform: scale(1.1);
+}
+
+
+/* === PAGE DIFFICULTY === */
+.menu-title {
+  font-size: 2.2rem;
+  color: white;
+  text-shadow: 0 0 15px rgba(0,0,0,0.4);
+  margin-bottom: 2rem;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn.difficulty {
+  background: linear-gradient(135deg, #7b2ff7, #5a00e0);
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  padding: 14px 30px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 0 10px rgba(0,0,0,0.25);
+}
+
+.btn.difficulty:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255,255,255,0.25);
+}
+
+.btn.back-btn {
+  margin-top: 2rem;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 10px 20px;
 }
