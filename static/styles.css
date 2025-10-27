@@ -97,29 +97,39 @@ button:hover {
 
 /* ===== GRID STYLES ===== */
 #grid {
-  background-color: var(--board-bg);
-  border-radius: 18px;
-  padding: 16px;
   display: grid;
-  grid-template-columns: repeat(7, 70px);
-  grid-template-rows: repeat(6, 70px);
-  gap: 8px;
-  box-shadow: 0 6px 18px var(--shadow-light);
-  transition: background-color 0.3s;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* espace égal entre toutes les cases */
+  margin: 0 auto;
+  background-color: var(--board-bg);
+  padding: 10px;
+  border-radius: 20px;
 }
+
+#grid {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--board-bg);
+  padding: 15px;
+  border-radius: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 8px; /* pour un espacement homogène global */
+}
+
 
 /* Individual cell */
 .cell {
   width: 70px;
   height: 70px;
-  background-color: var(--cell-bg);
   border-radius: 50%;
+  background-color: var(--cell-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-  box-shadow: inset 0 4px 6px rgba(0,0,0,0.1);
+  margin: 4px; /* 🔹 espace autour de chaque rond */
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .cell:hover:not(.red):not(.yellow) {
