@@ -17,7 +17,7 @@ form {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 350px;
     text-align: center;
-    margin-bottom: 12%;
+    margin-bottom: 8%;
     border:rgba(0, 0, 0, 0.1);
     border-width: 6px;
 }
@@ -64,7 +64,23 @@ input {
     box-sizing: border-box;
 }
 
+#form-section {
+  display: flex;
+  justify-content: center; /* centre horizontalement */
+  margin-top: 2em; /* espace au-dessus */
+  margin-left: 27%;
+}
 
+/* Ajuste un peu le formulaire à l’intérieur */
+#form-section form {
+  margin: 0; /* annule toute marge auto */
+  width: 350px;
+  background-color: #BFDDEB;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
 
 /* Styles pour le bouton et l'overlay des règles */
 #show-rules-btn {
