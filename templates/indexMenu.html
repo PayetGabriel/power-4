@@ -62,6 +62,30 @@
       </div>
     </div>
 
+    <!-- Overlay de l'histoire : couvre presque tout l'écran et apparaît par-dessus les boutons -->
+    <div id="history-overlay" class="history-overlay" aria-hidden="true" style="display:none;">
+      <div class="history-container" role="dialog" aria-modal="true" aria-labelledby="history-title">
+        <button id="close-history" class="close-history" aria-label="Fermer">x</button>
+        <h2 id="history-title">Histoire du Puissance 4</h2>
+        <div class="rules-body">
+          <BR>
+          <p>Le Puissance 4, tel que nous le connaissons aujourd'hui, a été commercialisé en 1974 par Milton Bradley Company, une filiale de Hasbro.</p>
+          <ol>
+            <BR>
+            <li>Inventé par Howard Wexler et Ned Strongin,</li>
+            <li>Ils voulais créer un jeu facile à comprendre, mais avec des possibilités de stratégies complexes, comme aux échecs.</li>
+            <li>Cependant, les racines du Puissance 4 remontent à bien avant les années 70</li>
+            <li>Le puissance 4 est une évolution du jeu du tic-tac-toe (le fameux morpion). Ces deux jeux partagent donc des ancêtres communs :</li>
+            <li> - Le Siega: apparu en Égypte</li>
+            <li> - Le Terni Lapili: joué en Rome antique</li>
+            <li> - le gomuku: né au Japon au début du XVIIIe siècle</li>          
+          </ol>
+          <BR>
+          <p>L'ancêtre le plus moderne du jeu de Puissance 4 s'avère être le Sogo, sorti en 1960 aux États-Unis.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Fields and button that will only display after registration or login -->
     <div id="form-section" style="display: none;">
       <!-- Form to redirect to the game -->
@@ -91,6 +115,11 @@
     const rulesOverlay = document.getElementById('rules-overlay');
     const closeRulesBtn2 = document.getElementById('close-rules');
 
+    // Toggle pour l'overlay de l'histoire (couvert presque tout l'écran)
+    const showHistoryBtn = document.getElementById('show-history-btn');
+    const historyOverlay = document.getElementById('history-overlay');
+    const closeHistoryBtn = document.getElementById('close-history');
+
     function openRulesOverlay() {
       rulesOverlay.style.display = 'block';
       rulesOverlay.setAttribute('aria-hidden', 'false');
@@ -107,6 +136,23 @@
 
     showRulesBtn.addEventListener('click', openRulesOverlay);
     closeRulesBtn2.addEventListener('click', closeRulesOverlay);
+
+    function openHistoryOverlay() {
+      historyOverlay.style.display = 'block';
+      historyOverlay.setAttribute('aria-hidden', 'false');
+      closeHistoryBtn.focus();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeHistoryOverlay() {
+      historyOverlay.style.display = 'none';
+      historyOverlay.setAttribute('aria-hidden', 'true');
+      showHistoryBtn.focus();
+      document.body.style.overflow = '';
+    }
+
+    showHistoryBtn.addEventListener('click', openHistoryOverlay);
+    closeHistoryBtn.addEventListener('click', closeHistoryOverlay);
 
     // Close with Escape when overlay open
     document.addEventListener('keydown', (e) => {
