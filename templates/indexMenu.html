@@ -17,25 +17,33 @@
 <body>
   <header>
     <!-- Main game title -->
-    <h1>Page de compte</h1>
+    <h1>Page d'accueil</h1>
   </header>
 
   <main>
-    <!-- Form to register a new account -->
-    <form action="/register" method="GET">
-      <button type="submit">S'inscrire</button>
-    </form>
+    <div class="centered">
+      <form action="/register" method="GET">
+        <button type="submit">S'inscrire</button>
+      </form>
+    </div>
 
-    <!-- Form to login to an existing account -->
-    <form action="/login" method="GET">
-      <button type="submit">Se connecter</button>
-    </form>
+    <!-- Bouton Se connecter -->
+    <div class="centered">
+      <form action="/login" method="GET">
+        <button type="submit">Se connecter</button>
+      </form>
+    </div>
 
-    <!-- Bouton 'Règles du jeu' : garde la même structure visuelle que S'inscrire / Se connecter -->
-    <form action="#" method="GET" onsubmit="return false;">
-      <button id="show-rules-btn" type="button">Règles du jeu</button>
-    </form>
-
+    <!-- Boutons du bas -->
+    <div class="menu-row">
+      <form action="#" method="GET" onsubmit="return false;">
+        <button id="show-rules-btn" type="button">Règles du jeu</button>
+      </form>
+      <form action="#" method="GET" onsubmit="return false;">
+        <button id="show-history-btn" type="button">Histoire du jeu</button>
+      </form>
+    </div>
+    
     <!-- Overlay des règles : couvre presque tout l'écran et apparaît par-dessus les boutons -->
     <div id="rules-overlay" class="rules-overlay" aria-hidden="true" style="display:none;">
       <div class="rules-container" role="dialog" aria-modal="true" aria-labelledby="rules-title">

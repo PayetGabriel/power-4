@@ -46,6 +46,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, nil)
 		return
 	case http.MethodPost:
+		log.Printf("register: request from %s method=%s", r.RemoteAddr, r.Method)
 		// parse form
 		if err := r.ParseForm(); err != nil {
 			log.Println("register: parse form error:", err)
@@ -54,6 +55,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		username := r.FormValue("username")
 		password := r.FormValue("password")
+		log.Printf("register: form values username=%s (password hidden)", username)
 		if username == "" || password == "" {
 			http.Error(w, "Remplir tous les champs", http.StatusBadRequest)
 			return
@@ -87,10 +89,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Println("register: user created", username)
 
-		// Pour faciliter les tests avec curl, renvoyer un message clair
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte("Utilisateur créé"))
+		// Rediriger vers la page de login pour usage normal via navigateur
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	default:
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
@@ -184,7 +184,9 @@ func replayHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	db.InitDB()
 
-	listener, err := net.Listen("tcp", ":0")
+	// Use a fixed port to avoid confusion with a random port (":0").
+	// This makes it easier to access the server consistently during tests.
+	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatalf("Erreur lors de l'écoute : %v", err)
 	}

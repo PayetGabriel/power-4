@@ -42,6 +42,20 @@ func UserExists(username string) (bool, error) {
 // CreateUser insère un nouvel utilisateur (nom + mot de passe hashé)
 func CreateUser(username, hashedPassword string) error {
 	stmt := "INSERT INTO utilisateur (Nom, Mdp) VALUES (?, ?)"
-	_, err := DB.Exec(stmt, username, hashedPassword)
-	return err
+	res, err := DB.Exec(stmt, username, hashedPassword)
+	if err != nil {
+		log.Printf("CreateUser SQL error: %v", err)
+		return err
+	}
+	// Log insert result for debugging
+	if id, err2 := res.LastInsertId(); err2 == nil {
+		if rows, err3 := res.RowsAffected(); err3 == nil {
+			log.Printf("CreateUser: LastInsertId=%d RowsAffected=%d", id, rows)
+		} else {
+			log.Printf("CreateUser: LastInsertId=%d RowsAffected(err)=%v", id, err3)
+		}
+	} else {
+		log.Printf("CreateUser: LastInsertId(err)=%v", err2)
+	}
+	return nil
 }
