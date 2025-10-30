@@ -120,7 +120,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Vérifie le mot de passe
 		var hashedPassword string
-		err = db.DB.QueryRow("SELECT Mdp FROM utilisateur WHERE Nom = ?", username).Scan(&hashedPassword)
+		err = db.DB.QueryRow("SELECT passeword FROM user WHERE username = ?", username).Scan(&hashedPassword)
 		if err != nil {
 			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 			return
