@@ -78,10 +78,15 @@ async function handleColumnClick(col) {
 
       updateDisplay(); // met à jour couleurs et joueur
 
-      if (gameData.gameOver) { // si fin de partie
-        const params = new URLSearchParams(window.location.search);
-        const mode = params.get('mode') || gameData.mode || 'normal';
-        setTimeout(() => window.location.href = `/result?mode=${encodeURIComponent(mode)}`, 300); // redirige vers résultat
+      if (gameData.gameOver) {
+        setTimeout(() => {
+          if (gameData.winner === "draw") {
+            showModal("Égalité !", "Personne n'a gagné cette partie");
+          } else {
+            const playerName = gameData.winner === "red" ? "Rouge" : "Jaune";
+            showModal("Victoire !", `Le joueur ${playerName} a gagné`);
+          }
+        }, 300);
       }
     } else {
       console.warn("Coup invalide:", moveResult.message); // colonne pleine ou erreur
@@ -192,3 +197,30 @@ async function resetGame() {
 }
 
 document.addEventListener("DOMContentLoaded", initGame); // lance initGame au chargement page
+
+// ==========================
+// MODAL VICTOIRE / ÉGALITÉ
+// ==========================
+
+// Affiche le modal avec le titre et message
+function showModal(title, message) {
+  document.getElementById("modal-title").textContent = title;
+  document.getElementById("modal-message").textContent = message;
+  document.getElementById("modal").classList.remove("hidden");
+}
+
+// Fermer le modal
+document.getElementById("modal-close").addEventListener("click", () => {
+  document.getElementById("modal").classList.add("hidden");
+});
+
+// Rejouer : cache le modal et réinitialise la partie
+document.getElementById("modal-replay").addEventListener("click", () => {
+  document.getElementById("modal").classList.add("hidden");
+  resetGame();
+});
+
+// Retour au menu
+document.getElementById("modal-menu").addEventListener("click", () => {
+  window.location.href = '/menu';
+});
