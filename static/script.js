@@ -3,31 +3,45 @@
  * Ajout : animation de chute du jeton
  */
 
-const COLS = 7;
-const ROWS = 6;
-
 const grid = document.getElementById("grid");
 const playerDisplay = document.querySelector("#current-player span");
 
 let gameData = null;
 let isWaiting = false;
 
+
+function getRows() {
+  return gameData.board.length;
+}
+
+function getCols() {
+  return gameData.board[0].length;
+}
+
 async function initGame() {
-  createGrid();
-  await fetchGameState();
+  await fetchGameState(); // d'abord récupérer le plateau
+  createGrid();           // puis créer la grille selon gameData
   updateDisplay();
 }
 
+
 function createGrid() {
+  if (!gameData || !gameData.board) return;
+
+  const rows = gameData.board.length;
+  const cols = gameData.board[0].length;
+
   grid.innerHTML = '';
-  for (let i = 0; i < ROWS * COLS; i++) {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    const col = i % COLS;
-    cell.addEventListener("click", () => handleColumnClick(col));
-    grid.appendChild(cell);
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.addEventListener("click", () => handleColumnClick(c));
+      grid.appendChild(cell);
+    }
   }
 }
+
 
 async function handleColumnClick(col) {
   if (isWaiting || (gameData && gameData.gameOver)) return;
@@ -69,7 +83,7 @@ async function handleColumnClick(col) {
 
 // Renvoie la première ligne vide d’une colonne
 function getEmptyRow(col) {
-  for (let row = ROWS - 1; row >= 0; row--) {
+  for (let row = getRows() - 1; row >= 0; row--) {
     if (gameData.board[row][col] === "empty") return row;
   }
   return null;
@@ -83,7 +97,7 @@ async function animateTokenFall(col, targetRow, player) {
     document.body.appendChild(token);
 
     // On récupère la cellule cible pour position exacte
-    const cellIndex = targetRow * COLS + col;
+    const cellIndex = targetRow * getCols() + col;
     const targetCell = grid.children[cellIndex];
     const cellRect = targetCell.getBoundingClientRect();
 
@@ -118,9 +132,9 @@ async function fetchGameState() {
 function updateDisplay() {
   if (!gameData) return;
   const cells = grid.children;
-  for (let row = 0; row < ROWS; row++) {
-    for (let col = 0; col < COLS; col++) {
-      const cellIndex = row * COLS + col;
+  for (let row = 0; row < getRows(); row++) {
+    for (let col = 0; col < getCols(); col++) {
+      const cellIndex = row * getCols() + col;
       const cell = cells[cellIndex];
       const cellValue = gameData.board[row][col];
       cell.classList.remove("red", "yellow");
@@ -139,11 +153,12 @@ function updateDisplay() {
 
 async function resetGame() {
   try {
-    const response = await fetch('/api/reset-game', { method: 'POST' });
+    const response = await fetch('/api/reset-game' + window.location.search, { method: 'POST' });
     gameData = await response.json();
+    createGrid();
     updateDisplay();
   } catch (error) {
-    console.error("Erreur lors de la réinitialisation du jeu:", error);
+    console.error(error);
   }
 }
 
