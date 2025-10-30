@@ -209,18 +209,27 @@ function showModal(title, message) {
   document.getElementById("modal").classList.remove("hidden");
 }
 
-// Fermer le modal
-document.getElementById("modal-close").addEventListener("click", () => {
-  document.getElementById("modal").classList.add("hidden");
-});
+document.addEventListener("DOMContentLoaded", () => {
+  const modalClose = document.getElementById("modal-close");
+  const modalReplay = document.getElementById("modal-replay");
+  const modalMenu = document.getElementById("modal-menu");
 
-// Rejouer : cache le modal et réinitialise la partie
-document.getElementById("modal-replay").addEventListener("click", () => {
-  document.getElementById("modal").classList.add("hidden");
-  resetGame();
-});
+  if (modalClose) {
+    modalClose.addEventListener("click", () => {
+      document.getElementById("modal").classList.add("hidden");
+    });
+  }
 
-// Retour au menu
-document.getElementById("modal-menu").addEventListener("click", () => {
-  window.location.href = '/menu';
+  if (modalReplay) {
+    modalReplay.addEventListener("click", async () => {
+      document.getElementById("modal").classList.add("hidden");
+      await resetGame(); // conserve le mode actuel
+    });
+  }
+
+  if (modalMenu) {
+    modalMenu.addEventListener("click", () => {
+      window.location.href = '/menu';
+    });
+  }
 });
