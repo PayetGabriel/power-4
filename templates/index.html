@@ -13,6 +13,27 @@
   <!-- Link to external CSS file for styling -->
   <link rel="stylesheet" href="/static/styles.css">
 </head>
+<script>
+  // Attendre que le DOM soit prêt puis mettre à jour le titre
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode') || 'normal';
+    const titleEl = document.querySelector('h1');
+
+    // Si on ne trouve pas de <h1>, on sort proprement
+    if (!titleEl) return;
+
+    const puissances = {
+      easy: 3,
+      medium: 5,
+      normal: 4,
+      hard: 7
+    };
+
+    const nombre = puissances[mode] || 4;
+    titleEl.textContent = `Puissance ${nombre}`;
+  });
+</script>
 <body>
   <header>
     <!-- Main game title -->
