@@ -1,15 +1,15 @@
-package game
+﻿package game
 
 import "encoding/json"
 
 // Game représente l'état du jeu Puissance 4
 type Game struct {
-	Board     [][]string `json:"board"`     // Plateau de jeu : "empty", "red", "yellow"
-	Turn      string     `json:"turn"`      // Tour actuel : "red" ou "yellow"
-	Winner    string     `json:"winner"`    // Gagnant : "", "red", "yellow", ou "draw"
-	GameOver  bool       `json:"gameOver"`  // Indique si le jeu est terminé
-	Mode      string     `json:"mode"`      // Mode de difficulté : easy, medium, normal, hard
-	WinLength int        `json:"winLength"` // Longueur de ligne nécessaire pour gagner
+	Board     [][]string `json:"board"`
+	Turn      string     `json:"turn"`
+	Winner    string     `json:"winner"`
+	GameOver  bool       `json:"gameOver"`
+	Mode      string     `json:"mode"`
+	WinLength int        `json:"winLength"`
 }
 
 // MoveRequest représente une demande de coup
@@ -116,7 +116,7 @@ func (g *Game) checkWin() bool {
 	return false
 }
 
-// checkDirection vérifie s'il y a 4 jetons alignés dans une direction donnée
+// checkDirection vérifie s'il y a N jetons alignés dans une direction donnée
 func (g *Game) checkDirection(startRow, startCol, deltaRow, deltaCol int) bool {
 	player := g.Board[startRow][startCol]
 	if player == "empty" {
@@ -159,5 +159,5 @@ func (g *Game) ToJSON() ([]byte, error) {
 
 // Reset remet le jeu à zéro en conservant le mode
 func (g *Game) Reset() {
-	*g = *NewGame(g.Mode) // passer le mode actuel pour conserver la configuration
+	*g = *NewGame(g.Mode)
 }

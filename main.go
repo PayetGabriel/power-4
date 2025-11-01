@@ -9,30 +9,30 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"power-4/src/db"
-	"power-4/src/game"
+	"power-4/db"
+	"power-4/game"
 	"syscall"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
-	tmpl = template.Must(template.ParseFiles("templates/index.html"))
-	g    = game.NewGame("easy")
+	tmplGame = template.Must(template.ParseFiles("web/templates/index.html"))
+	tmplMenu = template.Must(template.ParseFiles("web/templates/indexMenu.html"))
+	g        = game.NewGame("easy")
 )
 
-// --- PAGE PRINCIPALE DU JEU ---
-func handler(w http.ResponseWriter, r *http.Request) {
-	err := tmpl.Execute(w, g)
+// --- PAGE D'ACCUEIL (MENU) ---
+func menuHandler(w http.ResponseWriter, r *http.Request) {
+	err := tmplMenu.Execute(w, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
-// --- MENU PRINCIPAL ---
-func menuHandler(w http.ResponseWriter, r *http.Request) {
-	tmplMenu := template.Must(template.ParseFiles("templates/indexMenu.html"))
-	err := tmplMenu.Execute(w, nil)
+// --- PAGE DE JEU ---
+func gameHandler(w http.ResponseWriter, r *http.Request) {
+	err := tmplGame.Execute(w, g)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -42,7 +42,7 @@ func menuHandler(w http.ResponseWriter, r *http.Request) {
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		t := template.Must(template.ParseFiles("templates/signup.html"))
+		t := template.Must(template.ParseFiles("web/templates/signup.html"))
 		t.Execute(w, nil)
 		return
 
@@ -62,6 +62,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 		exists, err := db.UserExists(username)
 		if err != nil {
+			log.Printf("Erreur UserExists: %v", err)
 			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 			return
 		}
@@ -72,15 +73,18 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 		hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
+			log.Printf("Erreur bcrypt: %v", err)
 			http.Error(w, "Erreur lors du hashage", http.StatusInternalServerError)
 			return
 		}
 
 		if err := db.CreateUser(username, string(hashed)); err != nil {
+			log.Printf("Erreur CreateUser: %v", err)
 			http.Error(w, "Erreur lors de la création de l'utilisateur", http.StatusInternalServerError)
 			return
 		}
 
+		log.Printf("✅ Utilisateur créé : %s", username)
 		// Redirection après inscription réussie
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -94,7 +98,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		t := template.Must(template.ParseFiles("templates/login.html"))
+		t := template.Must(template.ParseFiles("web/templates/login.html"))
 		t.Execute(w, nil)
 		return
 
@@ -107,31 +111,36 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
-		// Vérifie si l’utilisateur existe
+		// Vérifie si l'utilisateur existe
 		exists, err := db.UserExists(username)
 		if err != nil {
+			log.Printf("Erreur UserExists lors du login: %v", err)
 			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 			return
 		}
 		if !exists {
+			log.Printf("❌ Tentative de connexion : utilisateur '%s' non trouvé", username)
 			http.Error(w, "Utilisateur non trouvé", http.StatusUnauthorized)
 			return
 		}
 
 		// Vérifie le mot de passe
 		var hashedPassword string
-		err = db.DB.QueryRow("SELECT passeword FROM user WHERE username = ?", username).Scan(&hashedPassword)
+		err = db.DB.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&hashedPassword)
 		if err != nil {
+			log.Printf("Erreur récupération mot de passe: %v", err)
 			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 			return
 		}
 
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
+			log.Printf("❌ Mot de passe incorrect pour '%s'", username)
 			http.Error(w, "Mot de passe incorrect", http.StatusUnauthorized)
 			return
 		}
 
+		log.Printf("✅ Connexion réussie : %s", username)
 		// Connexion réussie → redirection vers le menu
 		http.Redirect(w, r, "/menu", http.StatusSeeOther)
 		return
@@ -199,7 +208,7 @@ func resetGameHandler(w http.ResponseWriter, r *http.Request) {
 func resultHandler(w http.ResponseWriter, r *http.Request) {
 	switch g.Winner {
 	case "red", "yellow":
-		t, err := template.ParseFiles("templates/win.html")
+		t, err := template.ParseFiles("web/templates/win.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -207,7 +216,7 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 		color := map[string]string{"red": "Rouge", "yellow": "Jaune"}[g.Winner]
 		t.Execute(w, map[string]string{"Winner": color})
 	case "draw":
-		t, err := template.ParseFiles("templates/draw.html")
+		t, err := template.ParseFiles("web/templates/draw.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -228,6 +237,7 @@ func replayHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// 🔗 Connexion à la base MySQL
 	db.InitDB()
+	defer db.DB.Close() // ✅ Déplacé ici pour être certain de fermer la connexion
 
 	// 🔥 Lancement du serveur
 	listener, err := net.Listen("tcp", ":8080")
@@ -237,8 +247,9 @@ func main() {
 	fmt.Printf("🚀 Serveur démarré sur http://localhost:%d\n", listener.Addr().(*net.TCPAddr).Port)
 
 	// --- ROUTES ---
-	http.HandleFunc("/", handler)
-	http.HandleFunc("/menu", menuHandler)
+	http.HandleFunc("/", menuHandler)     // ✅ Page d'accueil = menu
+	http.HandleFunc("/menu", menuHandler) // ✅ /menu = même page
+	http.HandleFunc("/game", gameHandler) // ✅ /game = grille de jeu
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/api/game-state", gameStateHandler)
@@ -248,9 +259,9 @@ func main() {
 	http.HandleFunc("/replay", replayHandler)
 
 	// --- FICHIERS STATIQUES ---
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("src/static"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
 
-	// --- GESTION DE L’ARRÊT PROPRE ---
+	// --- GESTION DE L'ARRÊT PROPRE ---
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
