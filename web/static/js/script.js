@@ -1,7 +1,8 @@
 /*
  * POWER 4 (CONNECT FOUR) GAME - JAVASCRIPT FRONTEND
- * Ajout : animation de chute du jeton
+ * Support des grilles de différentes tailles selon le mode
  */
+console.log("🚀 Script chargé !");
 
 const grid = document.getElementById("grid");
 const playerDisplay = document.querySelector("#current-player span");
@@ -19,8 +20,8 @@ function getCols() {
 }
 
 async function initGame() {
-  await fetchGameState(); // d'abord récupérer le plateau
-  createGrid();           // puis créer la grille selon gameData
+  await fetchGameState();
+  createGrid();
   updateDisplay();
 }
 
@@ -28,18 +29,37 @@ async function initGame() {
 function createGrid() {
   if (!gameData || !gameData.board) return;
 
-  const rows = gameData.board.length;
-  const cols = gameData.board[0].length;
+  const rows = getRows();
+  const cols = getCols();
+
+  // ✅ Configuration dynamique du CSS Grid avec !important via style
+  grid.style.cssText = `
+    display: grid !important;
+    grid-template-columns: repeat(${cols}, var(--cell-size)) !important;
+    grid-template-rows: repeat(${rows}, var(--cell-size)) !important;
+    gap: var(--cell-gap);
+    background-color: var(--board-bg);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 6px 18px var(--shadow-light);
+    width: fit-content;
+    margin: 0 auto;
+  `;
 
   grid.innerHTML = '';
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const cell = document.createElement("div");
       cell.className = "cell";
+      cell.dataset.row = r;
+      cell.dataset.col = c;
       cell.addEventListener("click", () => handleColumnClick(c));
       grid.appendChild(cell);
     }
   }
+
+  console.log(`✅ Grille créée: ${rows} lignes × ${cols} colonnes (mode: ${gameData.mode})`);
+  console.log(`📐 Style grid appliqué: ${cols} colonnes × ${rows} lignes`);
 }
 
 
@@ -48,8 +68,14 @@ async function handleColumnClick(col) {
   isWaiting = true;
 
   try {
-    // On récupère la ligne de destination avant d’envoyer le coup
+    // On récupère la ligne de destination avant d'envoyer le coup
     const emptyRow = getEmptyRow(col);
+
+    if (emptyRow === null) {
+      console.warn("Colonne pleine");
+      isWaiting = false;
+      return;
+    }
 
     const response = await fetch('/api/make-move', {
       method: 'POST',
@@ -81,7 +107,7 @@ async function handleColumnClick(col) {
   }
 }
 
-// Renvoie la première ligne vide d’une colonne
+// Renvoie la première ligne vide d'une colonne
 function getEmptyRow(col) {
   for (let row = getRows() - 1; row >= 0; row--) {
     if (gameData.board[row][col] === "empty") return row;
@@ -99,14 +125,24 @@ async function animateTokenFall(col, targetRow, player) {
     // On récupère la cellule cible pour position exacte
     const cellIndex = targetRow * getCols() + col;
     const targetCell = grid.children[cellIndex];
+    
+    if (!targetCell) {
+      console.error("Cellule cible introuvable");
+      token.remove();
+      resolve();
+      return;
+    }
+
     const cellRect = targetCell.getBoundingClientRect();
+    const gridRect = grid.getBoundingClientRect();
 
     // Position initiale (au-dessus de la grille)
-    const gridRect = grid.getBoundingClientRect();
     token.style.left = `${cellRect.left}px`;
     token.style.top = `${gridRect.top - cellRect.height}px`;
+    token.style.width = `${cellRect.width * 0.8}px`;
+    token.style.height = `${cellRect.height * 0.8}px`;
 
-    // Déclenche l’animation
+    // Déclenche l'animation
     requestAnimationFrame(() => {
       const endY = cellRect.top;
       token.style.transform = `translateY(${endY - (gridRect.top - cellRect.height)}px)`;
@@ -124,6 +160,7 @@ async function fetchGameState() {
   try {
     const response = await fetch('/api/game-state');
     gameData = await response.json();
+    console.log("📊 État du jeu récupéré:", gameData.mode, `${getRows()}x${getCols()}`);
   } catch (error) {
     console.error("Erreur lors de la récupération de l'état du jeu:", error);
   }
@@ -131,11 +168,14 @@ async function fetchGameState() {
 
 function updateDisplay() {
   if (!gameData) return;
+  
   const cells = grid.children;
   for (let row = 0; row < getRows(); row++) {
     for (let col = 0; col < getCols(); col++) {
       const cellIndex = row * getCols() + col;
       const cell = cells[cellIndex];
+      if (!cell) continue;
+      
       const cellValue = gameData.board[row][col];
       cell.classList.remove("red", "yellow");
       if (cellValue !== "empty") {
@@ -153,7 +193,7 @@ function updateDisplay() {
 
 async function resetGame() {
   try {
-    const response = await fetch('/api/reset-game' + window.location.search, { method: 'POST' });
+    const response = await fetch('/api/reset-game', { method: 'POST' });
     gameData = await response.json();
     createGrid();
     updateDisplay();

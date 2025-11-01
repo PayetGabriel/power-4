@@ -17,9 +17,10 @@ import (
 )
 
 var (
-	tmplGame = template.Must(template.ParseFiles("web/templates/index.html"))
-	tmplMenu = template.Must(template.ParseFiles("web/templates/indexMenu.html"))
-	g        = game.NewGame("easy")
+	tmplGame       = template.Must(template.ParseFiles("web/templates/index.html"))
+	tmplMenu       = template.Must(template.ParseFiles("web/templates/indexMenu.html"))
+	tmplDifficulty = template.Must(template.ParseFiles("web/templates/difficulty.html"))
+	g              = game.NewGame("normal")
 )
 
 // --- PAGE D'ACCUEIL (MENU) ---
@@ -30,8 +31,25 @@ func menuHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// --- PAGE DE CHOIX DE DIFFICULTÉ ---
+func difficultyHandler(w http.ResponseWriter, r *http.Request) {
+	err := tmplDifficulty.Execute(w, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 // --- PAGE DE JEU ---
 func gameHandler(w http.ResponseWriter, r *http.Request) {
+	// Récupère le mode depuis l'URL (ex: /game?mode=easy)
+	mode := r.URL.Query().Get("mode")
+
+	// Si un mode est spécifié, crée une nouvelle partie avec ce mode
+	if mode != "" {
+		log.Printf("🎮 Nouvelle partie en mode: %s", mode)
+		g = game.NewGame(mode)
+	}
+
 	err := tmplGame.Execute(w, g)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -85,8 +103,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.Printf("✅ Utilisateur créé : %s", username)
-		// Redirection après inscription réussie
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		// Redirection vers la page de difficulté après inscription
+		http.Redirect(w, r, "/difficulty", http.StatusSeeOther)
 		return
 
 	default:
@@ -141,8 +159,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.Printf("✅ Connexion réussie : %s", username)
-		// Connexion réussie → redirection vers le menu
-		http.Redirect(w, r, "/menu", http.StatusSeeOther)
+		// Connexion réussie → redirection vers choix de difficulté
+		http.Redirect(w, r, "/difficulty", http.StatusSeeOther)
 		return
 
 	default:
@@ -237,7 +255,7 @@ func replayHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// 🔗 Connexion à la base MySQL
 	db.InitDB()
-	defer db.DB.Close() // ✅ Déplacé ici pour être certain de fermer la connexion
+	defer db.DB.Close()
 
 	// 🔥 Lancement du serveur
 	listener, err := net.Listen("tcp", ":8080")
@@ -247,9 +265,10 @@ func main() {
 	fmt.Printf("🚀 Serveur démarré sur http://localhost:%d\n", listener.Addr().(*net.TCPAddr).Port)
 
 	// --- ROUTES ---
-	http.HandleFunc("/", menuHandler)     // ✅ Page d'accueil = menu
-	http.HandleFunc("/menu", menuHandler) // ✅ /menu = même page
-	http.HandleFunc("/game", gameHandler) // ✅ /game = grille de jeu
+	http.HandleFunc("/", menuHandler)                 // Page d'accueil = menu
+	http.HandleFunc("/menu", menuHandler)             // Menu principal
+	http.HandleFunc("/difficulty", difficultyHandler) // ✅ Choix de difficulté
+	http.HandleFunc("/game", gameHandler)             // Grille de jeu (+ gestion du mode)
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/api/game-state", gameStateHandler)
