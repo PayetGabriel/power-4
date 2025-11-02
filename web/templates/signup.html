@@ -9,7 +9,7 @@
 <body>
   <main>
     <h1>S'inscrire</h1>
-    <form action="/register" method="POST">
+    <form id="signup-form" action="/register" method="POST">
       <label for="username">Nom d'utilisateur</label>
       <input id="username" name="username" type="text" required>
 
@@ -18,8 +18,40 @@
 
       <button type="submit">Créer un compte</button>
     </form>
+    <p id="message" style="color: red; display: none;"></p>
     <p><a href="/">Retour</a></p>
   </main>
+
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const messageEl = document.getElementById('message');
+      
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+        });
+        
+        if (response.ok || response.status === 303) {
+          // Succès - redirection
+          window.location.href = '/difficulty';
+        } else {
+          const text = await response.text();
+          messageEl.textContent = text;
+          messageEl.style.display = 'block';
+        }
+      } catch (error) {
+        messageEl.textContent = 'Erreur de connexion au serveur';
+        messageEl.style.display = 'block';
+      }
+    });
+  </script>
 </body>
 </html>
-<!-- signup.html -->
