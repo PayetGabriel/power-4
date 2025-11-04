@@ -111,14 +111,6 @@
   </main>
 
   <script>
-    // Example logic to display fields after registration or login
-    document.querySelectorAll('form[action="/register"], form[action="/login"]').forEach(form => {
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            document.getElementById('form-section').style.display = 'block';
-        });
-    });
-
     // Quand ils confirment leur pseudo/mot de passe, rediriger vers le choix de difficulté
     document.querySelector('#form-section form').addEventListener('submit', function(event) {
         event.preventDefault();
