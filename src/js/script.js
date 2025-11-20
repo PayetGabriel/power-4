@@ -20,14 +20,14 @@ function getCols() {
 }
 
 async function initGame() {
-  await fetchGameState();
-  createGrid();
-  updateDisplay();
+  await fetchGameState(); // récupère l'état du jeu depuis le serveur
+  createGrid(); // crée visuellement la grille HTML
+  updateDisplay(); // affiche les jetons déjà placés (si partie en cours)
 }
 
 
 function createGrid() {
-  if (!gameData || !gameData.board) return;
+  if (!gameData || !gameData.board) return; // Si pas de données, on quitte
 
   const rows = getRows();
   const cols = getCols();
@@ -46,13 +46,13 @@ function createGrid() {
     margin: 0 auto;
   `;
 
-  grid.innerHTML = '';
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const cell = document.createElement("div");
-      cell.className = "cell";
-      cell.dataset.row = r;
-      cell.dataset.col = c;
+  grid.innerHTML = ''; // Vide la grille avant de la recréer
+  for (let r = 0; r < rows; r++) {           // Pour chaque ligne
+  for (let c = 0; c < cols; c++) {         // Pour chaque colonne
+    const cell = document.createElement("div");  // Crée un <div>
+    cell.className = "cell";                     // Ajoute la classe CSS "cell"
+    cell.dataset.row = r;                        // data-row="0", "1", etc.
+    cell.dataset.col = c;                        // data-col="0", "1", etc.
       cell.addEventListener("click", () => handleColumnClick(c));
       grid.appendChild(cell);
     }
@@ -64,7 +64,7 @@ function createGrid() {
 
 
 async function handleColumnClick(col) {
-  if (isWaiting || (gameData && gameData.gameOver)) return;
+  if (isWaiting || (gameData && gameData.gameOver)) return; // Ignore si en attente ou partie terminée
   isWaiting = true;
 
   try {
@@ -193,7 +193,7 @@ function updateDisplay() {
 
 async function resetGame() {
   try {
-    const response = await fetch('/api/reset-game', { method: 'POST' });
+    const response = await fetch('/api/reset-game', { method: 'POST' }); // Envoie une requête POST pour réinitialiser
     gameData = await response.json();
     createGrid();
     updateDisplay();

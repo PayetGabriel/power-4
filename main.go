@@ -9,17 +9,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"power-4/db"
-	"power-4/game"
+	"power-4/src/go/db"
+	"power-4/src/go/game"
+	"strings"
 	"syscall"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
-	tmplGame       = template.Must(template.ParseFiles("web/templates/index.html"))
-	tmplMenu       = template.Must(template.ParseFiles("web/templates/indexMenu.html"))
-	tmplDifficulty = template.Must(template.ParseFiles("web/templates/difficulty.html"))
+	tmplGame       = template.Must(template.ParseFiles("templates/html/index.html"))
+	tmplMenu       = template.Must(template.ParseFiles("templates/html/indexMenu.html"))
+	tmplDifficulty = template.Must(template.ParseFiles("templates/html/difficulty.html"))
 	g              = game.NewGame("normal")
 )
 
@@ -60,7 +61,7 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		t := template.Must(template.ParseFiles("web/templates/signup.html"))
+		t := template.Must(template.ParseFiles("templates/html/signup.html"))
 		t.Execute(w, nil)
 		return
 
@@ -116,7 +117,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		t := template.Must(template.ParseFiles("web/templates/login.html"))
+		t := template.Must(template.ParseFiles("templates/html/login.html"))
 		t.Execute(w, nil)
 		return
 
@@ -226,7 +227,7 @@ func resetGameHandler(w http.ResponseWriter, r *http.Request) {
 func resultHandler(w http.ResponseWriter, r *http.Request) {
 	switch g.Winner {
 	case "red", "yellow":
-		t, err := template.ParseFiles("web/templates/win.html")
+		t, err := template.ParseFiles("templates/html/win.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -234,7 +235,7 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 		color := map[string]string{"red": "Rouge", "yellow": "Jaune"}[g.Winner]
 		t.Execute(w, map[string]string{"Winner": color})
 	case "draw":
-		t, err := template.ParseFiles("web/templates/draw.html")
+		t, err := template.ParseFiles("templates/html/draw.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -249,6 +250,20 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 func replayHandler(w http.ResponseWriter, r *http.Request) {
 	g.Reset()
 	http.Redirect(w, r, "/game", http.StatusSeeOther)
+}
+
+type mimeFileServer struct {
+	handler http.Handler
+}
+
+func (m *mimeFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Force le type MIME pour les fichiers JS
+	if strings.HasSuffix(r.URL.Path, ".js") {
+		w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
+	} else if strings.HasSuffix(r.URL.Path, ".css") {
+		w.Header().Set("Content-Type", "text/css; charset=utf-8")
+	}
+	m.handler.ServeHTTP(w, r)
 }
 
 // --- MAIN ---
@@ -278,7 +293,9 @@ func main() {
 	http.HandleFunc("/replay", replayHandler)
 
 	// --- FICHIERS STATIQUES ---
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
+	fs := http.FileServer(http.Dir("assets"))
+	http.Handle("/static/", http.StripPrefix("/static/", &mimeFileServer{handler: fs}))
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("src/js"))))
 
 	// --- GESTION DE L'ARRÊT PROPRE ---
 	stop := make(chan os.Signal, 1)

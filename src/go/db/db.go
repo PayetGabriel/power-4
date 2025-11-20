@@ -1,4 +1,4 @@
-﻿package db
+package db
 
 import (
 	"database/sql"
@@ -34,12 +34,12 @@ func UserExists(username string) (bool, error) {
 	var id int
 	err := DB.QueryRow("SELECT id FROM users WHERE username = ?", username).Scan(&id)
 	if err == sql.ErrNoRows {
-		return false, nil
+		return false, nil // Pas d'erreur, juste pas d'utilisateur
 	}
 	if err != nil {
-		return false, err
+		return false, err // Problème de connexion, erreur SQL, etc.
 	}
-	return true, nil
+	return true, nil // Existe, pas d'erreur
 }
 
 // CreateUser insère un nouvel utilisateur (nom + mot de passe hashé)
