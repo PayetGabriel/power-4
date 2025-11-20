@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Inscription</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/styleMenu.css">
+  <style>
+    /* Force le bouton à être cliquable */
+    button[type="submit"] {
+      position: relative !important;
+      z-index: 10000 !important;
+      pointer-events: auto !important;
+    }
+    form {
+      position: relative !important;
+      z-index: 9999 !important;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>S'inscrire</h1>
+    <form action="/register" method="POST">
+      <label for="username">Nom d'utilisateur</label>
+      <input id="username" name="username" type="text" required>
+
+      <label for="password">Mot de passe</label>
+      <input id="password" name="password" type="password" required>
+
+      <button type="submit">Créer un compte</button>
+    </form>
+    <p><a href="/">Retour</a></p>
+  </main>
+</body>
+</html>

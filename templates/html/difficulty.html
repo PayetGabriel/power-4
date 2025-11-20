@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Choisir la difficulté</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Choisir la difficulté</h1>
+  </header>
+
+  <main>
+    <form id="difficulty-form">
+      <button type="button" data-mode="easy">Facile</button>
+      <button type="button" data-mode="medium">Moyen</button>
+      <button type="button" data-mode="normal">Normal</button>
+      <button type="button" data-mode="hard">Difficile</button>
+    </form>
+  </main>
+
+  <script>
+    document.querySelectorAll('#difficulty-form button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.mode;
+        // On passe le mode dans l'URL pour le backend
+        window.location.href = `/game?mode=${mode}`;
+      });
+    });
+  </script>
+</body>
+</html>

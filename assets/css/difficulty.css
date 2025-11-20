@@ -1,0 +1,113 @@
+/*
+ * POWER 4 - DIFFICULTY SELECTION PAGE
+ * Style sobre, moderne et cohérent avec ton menu
+ */
+
+:root {
+  --bg: radial-gradient(circle at center, #2d1b69, #1b103d 80%);
+  --text: #fff;
+  --shadow: rgba(0, 0, 0, 0.25);
+  --easy: linear-gradient(145deg, #76c893, #52b788);
+  --medium: linear-gradient(145deg, #ffd166, #fca311);
+  --normal: linear-gradient(145deg, #4cc9f0, #4895ef);
+  --hard: linear-gradient(145deg, #c1121f, #780000);
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+}
+
+h1 {
+  font-size: 2.3rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  text-shadow: 0 3px 10px var(--shadow);
+}
+
+/* Container grid */
+.difficulty-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  width: 90%;
+  max-width: 1000px;
+}
+
+/* Cards */
+.card {
+  background: #222;
+  border-radius: 18px;
+  padding: 1.8rem 1rem;
+  text-align: center;
+  box-shadow: 0 8px 20px var(--shadow);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.9;
+  z-index: 0;
+  border-radius: 18px;
+  transition: opacity 0.3s;
+}
+
+.card h2, .card p, .card button {
+  position: relative;
+  z-index: 1;
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.card p {
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+button {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background: rgba(255,255,255,0.25);
+  transform: scale(1.05);
+}
+
+/* Gradients per difficulty */
+.easy::before { background: var(--easy); }
+.medium::before { background: var(--medium); }
+.normal::before { background: var(--normal); }
+.hard::before { background: var(--hard); }
+
+/* Hover effects */
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px var(--shadow);
+}
+
+.card:hover::before {
+  opacity: 1;
+}

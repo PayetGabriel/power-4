@@ -1,0 +1,174 @@
+<!--
+  POWER 4 (CONNECT FOUR) GAME - HTML STRUCTURE
+  Main HTML for a Connect Four game.
+  Combines functional JS structure (reset, theme toggle) and detailed comments.
+-->
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu du Jeu</title>
+  
+  <!-- Link to external CSS file for styling -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/styleMenu.css">
+</head>
+<body>
+  <header>
+    <!-- Main game title -->
+    <h1>Page d'accueil</h1>
+  </header>
+
+  <main>
+    <div class="centered">
+      <form action="/register" method="GET">
+        <button type="submit">S'inscrire</button>
+      </form>
+    </div>
+
+    <div class="centered">
+    <!-- Form to login to an existing account -->
+    <form action="/login" method="GET">
+      <button type="submit">Se connecter</button>
+    </form>
+    </div>
+    
+    <div class="centered">
+    <!-- Form to play as a guest (no account needed) -->
+    <form action="/difficulty" method="GET">
+      <button type="submit">Jouer en tant qu'invité</button>
+    </form>
+    </div>
+
+    <!-- Boutons du bas -->
+    <div class="menu-row">
+      <form action="#" method="GET" onsubmit="return false;">
+        <button id="show-rules-btn" type="button">Règles du jeu</button>
+      </form>
+      <form action="#" method="GET" onsubmit="return false;">
+        <button id="show-history-btn" type="button">Histoire du jeu</button>
+      </form>
+    </div>
+    
+    <!-- Overlay des règles : couvre presque tout l'écran et apparaît par-dessus les boutons -->
+    <div id="rules-overlay" class="rules-overlay" aria-hidden="true" style="display:none;">
+      <div class="rules-container" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+
+        <button id="close-rules" class="close-rules" aria-label="Fermer">x</button>
+
+        <h2 id="rules-title">Règles du Puissance 4</h2>
+        <div class="rules-body">
+          <p>But : être le premier à aligner 4 pions de sa couleur horizontalement, verticalement ou en diagonale.</p>
+          <ol>
+            <li>Deux joueurs jouent alternativement.</li>
+            <li>À chaque tour, un joueur choisit une colonne et dépose un pion ; il tombe sur la première case vide en bas.</li>
+            <li>Le premier joueur qui aligne 4 de ses pions gagne.</li>
+            <li>Si la grille est remplie sans qu'aucun joueur n'ait aligné 4 pions, la partie est nulle.</li>
+          </ol>
+          <p>Conseils : bloquez les alignements de l'adversaire et essayez de créer des doubles menaces.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay de l'histoire : couvre presque tout l'écran et apparaît par-dessus les boutons -->
+    <div id="history-overlay" class="history-overlay" aria-hidden="true" style="display:none;">
+      <div class="history-container" role="dialog" aria-modal="true" aria-labelledby="history-title">
+        <button id="close-history" class="close-history" aria-label="Fermer">x</button>
+        <h2 id="history-title">Histoire du Puissance 4</h2>
+        <div class="rules-body">
+          <BR>
+          <p>Le Puissance 4, tel que nous le connaissons aujourd'hui, a été commercialisé en 1974 par Milton Bradley Company, une filiale de Hasbro.</p>
+          <ol>
+            <BR>
+            <li>Inventé par Howard Wexler et Ned Strongin,</li>
+            <li>Ils voulais créer un jeu facile à comprendre, mais avec des possibilités de stratégies complexes, comme aux échecs.</li>
+            <li>Cependant, les racines du Puissance 4 remontent à bien avant les années 70</li>
+            <li>Le puissance 4 est une évolution du jeu du tic-tac-toe (le fameux morpion). Ces deux jeux partagent donc des ancêtres communs :</li>
+            <li> - Le Siega: apparu en Égypte</li>
+            <li> - Le Terni Lapili: joué en Rome antique</li>
+            <li> - le gomuku: né au Japon au début du XVIIIe siècle</li>          
+          </ol>
+          <BR>
+          <p>L'ancêtre le plus moderne du jeu de Puissance 4 s'avère être le Sogo, sorti en 1960 aux États-Unis.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fields and button that will only display after registration or login -->
+    <div id="form-section" style="display: none;">
+      <!-- Form to redirect to the game -->
+      <form action="/game" method="GET">
+        <label for="username">Nom d'utilisateur :</label>
+        <input type="text" id="username" name="username" placeholder="Entrez votre nom" required>
+
+        <label for="password">Mot de passe :</label>
+        <input type="password" id="password" name="password" placeholder="Entrez votre mot de passe" required>
+
+        <button type="submit">Confirmer</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    // Quand ils confirment leur pseudo/mot de passe, rediriger vers le choix de difficulté
+    document.querySelector('#form-section form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        window.location.href = '/difficulty';
+    });
+
+    // Toggle pour l'overlay des règles (couvert presque tout l'écran)
+    const showRulesBtn = document.getElementById('show-rules-btn');
+    const rulesOverlay = document.getElementById('rules-overlay');
+    const closeRulesBtn2 = document.getElementById('close-rules');
+
+    // Toggle pour l'overlay de l'histoire (couvert presque tout l'écran)
+    const showHistoryBtn = document.getElementById('show-history-btn');
+    const historyOverlay = document.getElementById('history-overlay');
+    const closeHistoryBtn = document.getElementById('close-history');
+
+    function openRulesOverlay() {
+      rulesOverlay.style.display = 'flex';  // <-- ici
+      rulesOverlay.setAttribute('aria-hidden', 'false');
+      closeRulesBtn2.focus();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeRulesOverlay() {
+      rulesOverlay.style.display = 'none';
+      rulesOverlay.setAttribute('aria-hidden', 'true');
+      showRulesBtn.focus();
+      document.body.style.overflow = '';
+    }
+
+    showRulesBtn.addEventListener('click', openRulesOverlay);
+    closeRulesBtn2.addEventListener('click', closeRulesOverlay);
+
+    function openHistoryOverlay() {
+      historyOverlay.style.display = 'block';
+      historyOverlay.setAttribute('aria-hidden', 'false');
+      closeHistoryBtn.focus();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeHistoryOverlay() {
+      historyOverlay.style.display = 'none';
+      historyOverlay.setAttribute('aria-hidden', 'true');
+      showHistoryBtn.focus();
+      document.body.style.overflow = '';
+    }
+
+    showHistoryBtn.addEventListener('click', openHistoryOverlay);
+    closeHistoryBtn.addEventListener('click', closeHistoryOverlay);
+
+    // Close with Escape when overlay open
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && rulesOverlay.getAttribute('aria-hidden') === 'false') {
+        closeRulesOverlay();
+      }
+    });
+
+    // Styles moved to static/styleMenu.css
+  </script>
+</body>
+</html>
