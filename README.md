@@ -101,13 +101,7 @@ Commencez par lire `main.go` pour voir les routes et handlers exposés.
 - Erreurs de compilation : lancez `go vet` et `go build` pour repérer les problèmes.
 - Ressources statiques manquantes : vérifiez les chemins dans les templates et que le serveur sert bien `assets/`.
 
-## FAQ
 
-- Comment changer le port d'écoute ?
-	- Ouvrez `main.go` et modifiez la valeur du port.
-
-- Où sont les templates HTML ?
-	- Dans `templates/html/`.
 
 ## Prochaines améliorations possibles
 
