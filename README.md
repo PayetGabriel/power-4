@@ -121,5 +121,4 @@ Commencez par lire `main.go` pour voir les routes et handlers exposés.
 
 ---
 
-Si vous voulez que j'ajoute d'autres modifications (ex : Dockerfile, tests de base), dites lesquelles et je les créerai.
-Exemple :
+
