@@ -15,7 +15,6 @@ power-4 est une petite application web écrite en Go. Elle sert une interface ba
 - Développement
 - Organisation du code
 - Remarques et dépannage
-- FAQ
 - Prochaines améliorations
 - Auteurs & contact
 
